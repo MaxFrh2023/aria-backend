@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0a0a0f;
+            background: #07070d;
             color: #f1f5f9;
             overflow: hidden;
         }
@@ -30,19 +30,28 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #0a0a0f;
-        }
+            background: radial-gradient(ellipse at 30% 20%, rgba(20,184,166,0.07) 0%, transparent 55%),
+                        radial-gradient(ellipse at 75% 80%, rgba(99,102,241,0.06) 0%, transparent 50%),
+                        #07070d;
+Page_Up        }
 
         .app-wrapper {
             width: 100%;
-            max-width: 420px;
+            max-width: 480px;
             height: 100vh;
             background: #0a0a0f;
             display: flex;
             flex-direction: column;
             position: relative;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 32px 64px rgba(0,0,0,0.7);
             border-radius: 0;
+        }
+
+        @media (min-width: 600px) {
+            .app-wrapper {
+                height: calc(100vh - 0px);
+                border-radius: 0;
+            }
         }
 
         @media (max-width: 500px) {
@@ -172,7 +181,8 @@
             color: #f1f5f9;
             font-size: 13px;
             font-family: 'Inter', sans-serif;
-            outline: none;            transition: all 0.3s ease;
+            outline: none;
+            transition: all 0.3s ease;
         }
 
         .setup-input:focus {
@@ -346,7 +356,8 @@
             background: #111118;
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 12px;
-            padding: 12px;            display: flex;
+            padding: 12px;
+            display: flex;
             flex-direction: column;
             align-items: center;
             gap: 8px;
@@ -520,7 +531,8 @@
         }
 
         .search-bar {
-            margin: 16px;            position: relative;
+            margin: 16px;
+            position: relative;
         }
 
         .search-input {
@@ -694,6 +706,7 @@
             margin-bottom: 8px;
             margin-right: 40px;
         }
+
         .card-icon {
             font-size: 18px;
         }
@@ -868,7 +881,8 @@
         }
 
         .message-bubble {
-            max-width: 80%;            padding: 12px 14px;
+            max-width: 80%;
+            padding: 12px 14px;
             border-radius: 12px;
             line-height: 1.5;
             font-size: 14px;
@@ -1043,6 +1057,7 @@
             color: #ef4444;
             border-color: rgba(239, 68, 68, 0.2);
         }
+
         .app-list-btn.disconnect:hover {
             background: rgba(239, 68, 68, 0.1);
             border-color: rgba(239, 68, 68, 0.4);
@@ -1216,7 +1231,8 @@
                                 <div class="app-status">Setup</div>
                             </div>
                             <div class="app-card" data-app="Spotify" onclick="showSetup('Spotify')">
-                                <div class="app-icon">🎵</div>                                <div class="app-name">Spotify</div>
+                                <div class="app-icon">🎵</div>
+                                <div class="app-name">Spotify</div>
                                 <div class="app-status">Connect</div>
                             </div>
                             <div class="app-card" data-app="Demo" onclick="loadDemoMode()">
@@ -1258,9 +1274,9 @@
                     <input type="text" class="search-input" placeholder="Ask ARIA anything..." id="dashboardSearch" onclick="switchScreen('chat')">
                 </div>
 
-                <div id="syncBar" style="display:none;background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.2);border-radius:12px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
-                    <div style="font-size:12px;color:#64748b" id="lastSyncLabel">Never synced</div>
-                    <button onclick="resyncGmail()" id="resyncBtn" style="padding:6px 14px;background:linear-gradient(135deg,#14b8a6,#06b6d4);border:none;border-radius:8px;color:#000;font-size:12px;font-weight:700;cursor:pointer">↻ Re-sync</button>
+                <div id="syncBar" style="display:none;background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.2);border-radius:12px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+                    <div style="font-size:12px;color:#64748b;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1" id="lastSyncLabel">Never synced</div>
+                    <button onclick="resyncGmail()" id="resyncBtn" style="flex-shrink:0;padding:6px 14px;background:linear-gradient(135deg,#14b8a6,#06b6d4);border:none;border-radius:8px;color:#000;font-size:12px;font-weight:700;cursor:pointer">↻ Re-sync</button>
                 </div>
 
                 <div class="feed" id="feed">
@@ -1299,14 +1315,24 @@
                     <div class="chat-header-title">ARIA Chat</div>
                 </div>
 
-                <div class="chat-messages">
+                <div class="chat-messages" id="chatMessages">
                     <div class="message aria">
                         <div class="message-bubble">Hi! I'm ARIA. I help you track bills, subscriptions, and find savings. What would you like to know?</div>
+                    </div>
+                    <!-- Quick suggestions shown only when chat is empty -->
+                    <div id="chatSuggestions" style="padding:12px 0 8px">
+                        <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">Try asking</div>
+                        <div style="display:flex;flex-direction:column;gap:8px">
+                            <button onclick="askSuggestion(this)" style="text-align:left;background:#111118;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:11px 14px;font-size:13px;color:#cbd5e1;cursor:pointer;transition:all 0.2s">💰 How much did I spend this month?</button>
+                            <button onclick="askSuggestion(this)" style="text-align:left;background:#111118;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:11px 14px;font-size:13px;color:#cbd5e1;cursor:pointer;transition:all 0.2s">📋 What subscriptions am I paying for?</button>
+                            <button onclick="askSuggestion(this)" style="text-align:left;background:#111118;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:11px 14px;font-size:13px;color:#cbd5e1;cursor:pointer;transition:all 0.2s">🔍 Find duplicate charges</button>
+                            <button onclick="askSuggestion(this)" style="text-align:left;background:#111118;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:11px 14px;font-size:13px;color:#cbd5e1;cursor:pointer;transition:all 0.2s">📅 What bills are due this week?</button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="chat-input-area">
-                    <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="handleChatKeypress(event)">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Ask ARIA anything..." onkeypress="handleChatKeypress(event)">
                     <button class="chat-send" onclick="sendMessage()">↑</button>
                 </div>
             </div>
@@ -1376,7 +1402,7 @@
                         </div>
                     </div>
 
-                    <!-- ── INTELLIGENCE WATCHLISTS ─────────────────────────── -->
+                    <!-- ────── INTELLIGENCE WATCHLISTS ──────────────────────────────────────────────────── -->
                     <div style="margin:24px 0 8px;font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:1px;font-weight:600">Intelligence Watchlists</div>
 
                     <!-- Stocks -->
@@ -1390,7 +1416,8 @@
                         </div>
                         <div id="stockChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:28px"></div>
                         <div style="display:flex;gap:8px">
-                            <input id="stockInput" type="text" placeholder="Add ticker (e.g. NVDA)" maxlength="10"                                style="flex:1;background:#0d1117;border:1px solid #334155;border-radius:8px;padding:8px 12px;color:#f1f5f9;font-size:13px;font-family:inherit;outline:none"
+                            <input id="stockInput" type="text" placeholder="Add ticker (e.g. NVDA)" maxlength="10"
+                                style="flex:1;background:#0d1117;border:1px solid #334155;border-radius:8px;padding:8px 12px;color:#f1f5f9;font-size:13px;font-family:inherit;outline:none"
                                 onkeydown="if(event.key==='Enter')Watchlist.addStock()"
                                 oninput="this.value=this.value.toUpperCase().replace(/[^A-Z.]/g,'')">
                             <button onclick="Watchlist.addStock()"
@@ -1425,7 +1452,7 @@
                         ⚡ Run Intelligence Scan Now
                     </button>
 
-                <!-- ── Travel Watchlist (TravelAgent — trips + open research) ── -->
+                <!-- ────── Travel Watchlist (TravelAgent — trips + open research) ────── -->
                 <div style="padding:0 16px 24px">
                     <div style="margin:24px 0 4px;font-size:11px;font-weight:700;letter-spacing:1px;color:#475569;text-transform:uppercase">✈️ Travel Research</div>
                     <div style="font-size:12px;color:#475569;margin-bottom:12px">Add a trip or destination. ARIA researches every hour and pushes 10–15 options to your feed — Airbnb, Booking, VRBO.</div>
@@ -1520,13 +1547,57 @@
 
             <!-- Profile Screen -->
             <div id="profile" class="screen">
-                <div class="profile-header">
+                <div style="overflow-y:auto;flex:1;padding:20px 16px 0">
+                <div class="profile-header" style="margin-bottom:20px">
                     <div class="profile-avatar" id="profileAvatar">U</div>
                     <div class="profile-name" id="profileName">User</div>
                     <div class="profile-email" id="profileEmail">Not connected</div>
                 </div>
 
-                <div class="profile-section">
+                <!-- Stats Row -->
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+                    <div style="background:#111118;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px 10px;text-align:center">
+                        <div style="font-size:18px;font-weight:700;color:#14b8a6" id="profileMonthlySpend">—</div>
+                        <div style="font-size:10px;color:#64748b;margin-top:3px;text-transform:uppercase;letter-spacing:0.5px">Monthly</div>
+                    </div>
+                    <div style="background:#111118;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px 10px;text-align:center">
+                        <div style="font-size:18px;font-weight:700;color:#f1f5f9" id="profileSubCount">—</div>
+                        <div style="font-size:10px;color:#64748b;margin-top:3px;text-transform:uppercase;letter-spacing:0.5px">Subs</div>
+                    </div>
+                    <div style="background:#111118;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px 10px;text-align:center">
+                        <div style="font-size:18px;font-weight:700;color:#10b981" id="profileSavings">—</div>
+                        <div style="font-size:10px;color:#64748b;margin-top:3px;text-transform:uppercase;letter-spacing:0.5px">Savings</div>
+                    </div>
+                </div>
+
+                <!-- Connected Apps -->
+                <div style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Connected Apps</div>
+                <div style="background:#111118;border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;margin-bottom:16px">
+                    <div style="padding:13px 16px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <span style="font-size:16px">📧</span>
+                            <span style="font-size:13px;color:#f1f5f9">Gmail</span>
+                        </div>
+                        <span id="profileGmailStatus" style="font-size:11px;font-weight:600;color:#64748b">Not connected</span>
+                    </div>
+                    <div style="padding:13px 16px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <span style="font-size:16px">🎵</span>
+                            <span style="font-size:13px;color:#f1f5f9">Spotify</span>
+                        </div>
+                        <span id="profileSpotifyStatus" style="font-size:11px;font-weight:600;color:#64748b">Not connected</span>
+                    </div>
+                    <div style="padding:13px 16px;display:flex;align-items:center;justify-content:space-between">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <span style="font-size:16px">⚡</span>
+                            <span style="font-size:13px;color:#f1f5f9">ARIA Agent</span>
+                        </div>
+                        <span style="font-size:11px;font-weight:600;color:#14b8a6">● Running</span>
+                    </div>
+                </div>
+
+                <div style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Account</div>
+                <div class="profile-section" style="margin-bottom:12px">
                     <div class="profile-item" onclick="alert('Settings coming soon')">
                         <div class="profile-item-label">Settings</div>
                         <div class="profile-item-arrow">→</div>
@@ -1535,9 +1606,14 @@
                         <div class="profile-item-label">Help & Support</div>
                         <div class="profile-item-arrow">→</div>
                     </div>
+                    <div class="profile-item" style="cursor:default">
+                        <div class="profile-item-label" style="color:#64748b">Version</div>
+                        <div style="font-size:12px;color:#334155">1.0.0</div>
+                    </div>
                 </div>
 
-                <button class="logout-btn" onclick="logout()">Sign Out</button>
+                <button class="logout-btn" onclick="logout()" style="margin-bottom:20px">Sign Out</button>
+                </div>
 
                 <div class="bottom-nav">
                     <div class="nav-item" onclick="switchScreen('dashboard')">
@@ -1562,13 +1638,14 @@
     </div>
 
     <script>
-        // ── API base URL — works both locally (file:// or 127.0.0.1) and on cloud ──
+        // ────── API base URL — works both locally (file:// or 127.0.0.1) and on cloud ──────
         const API = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1')
-            ? 'http://127.0.0.1:3001'            : window.location.origin;
+            ? 'http://127.0.0.1:3001'
+            : window.location.origin;
 
-        /* ═══════════════════════════════════════════════════════════════════
+        /* ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
            APP STATE & STORAGE
-        ═══════════════════════════════════════════════════════════════════ */
+        ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
         const S = {
             auth: {
                 token: null,
@@ -1620,9 +1697,9 @@
             localStorage.setItem('aria_data', JSON.stringify(S.data));
         }
 
-        /* ═══════════════════════════════════════════════════════════════════
+        /* ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
            GMAIL OAUTH & API
-        ═══════════════════════════════════════════════════════════════════ */
+        ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
         const GAuth = {
             clientId: '',
             token: null,
@@ -1694,9 +1771,9 @@
             }
         };
 
-        /* ═══════════════════════════════════════════════════════════════════
+        /* ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
            AI ENGINE (OpenAI Email Parsing)
-        ═══════════════════════════════════════════════════════════════════ */
+        ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
         const AIEngine = {
             async analyze(emails) {
                 if (!S.cfg.openaiKey) return emails.flatMap(e => [this._fb(e)]).filter(Boolean);
@@ -1738,7 +1815,8 @@ Return JSON array. Each item must have ALL these fields:
 {
   "emailIndex": 0,
   "actualVendor": "Netflix",
-  "billingPlatform": "Direct",  "productDescription": "Netflix 4 Screens Monthly",
+  "billingPlatform": "Direct",
+  "productDescription": "Netflix 4 Screens Monthly",
   "amount": 49.99,
   "currency": "AED",
   "category": "streaming",
@@ -1819,9 +1897,9 @@ ${block}`;
             }
         };
 
-        /* ═══════════════════════════════════════════════════════════════════
+        /* ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
            SYNC ENGINE
-        ═══════════════════════════════════════════════════════════════════ */
+        ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
         const Sync = {
             running: false,
             async start() {
@@ -1862,7 +1940,7 @@ ${block}`;
                     S.data.overdueAlerts = allItems.filter(x => x.isOverdue || x.emailType === 'overdue_notice');
                     S.data.upcomingRaw = allItems.filter(x => !x.isOverdue && (x.emailType === 'invoice' || x.emailType === 'upcoming') && x.amount > 0 && x.actualVendor !== 'Unknown');
                     const receipts = allItems.filter(x => !x.isOverdue && x.emailType !== 'overdue_notice' && x.emailType !== 'invoice' && x.emailType !== 'upcoming');
-                    const receiptIdx = new Set(receipts.map(r => `${r.actualVendor}|${r.amount}|${(r.dateStr || '').slice(0, 7)}`));
+                    const receiptIdx = new Set(receipts.map(r => `${r.actualVendor}|${r.amount}|${(r.dateStr || '').slice(0, 7)}` ));
                     S.data.upcomingRaw = S.data.upcomingRaw.filter(u => {
                         const k = `${u.actualVendor}|${u.amount}|${(u.dateStr || '').slice(0, 7)}`;
                         return !receiptIdx.has(k);
@@ -1906,13 +1984,14 @@ ${block}`;
             }
         };
 
-        /* ═══════════════════════════════════════════════════════════════════
+        /* ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
            INTELLIGENCE ENGINE
-        ═══════════════════════════════════════════════════════════════════ */
+        ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
         const Intelligence = {
             async run(items, upcomingRaw, overdueAlerts) {
                 const cards = [];
-                cards.push(...this.billSpikeDetector(items));                cards.push(...this.duplicateSubscriptionDetector(items));
+                cards.push(...this.billSpikeDetector(items));
+                cards.push(...this.duplicateSubscriptionDetector(items));
                 cards.push(...this.unusedSubscriptionDetector(items));
                 cards.push(...this.renewalAlerts(upcomingRaw));
                 cards.push(...this.overdueDetector(overdueAlerts));
@@ -1979,7 +2058,7 @@ ${block}`;
                     const daysSince = (today - itemDate) / (1000 * 60 * 60 * 24);
                     if (daysSince >= 60) {
                         cards.push({
-                            type: 'reminder', icon: '📅', vendor: item.actualVendor, title: `${item.actualVendor} — still using it?`, body: `Last charge was ${Math.floor(daysSince)} days ago (AED ${item.amount.toFixed(2)}/mo). No recent activity detected.`, priority: 70, ts: new Date()
+                            type: 'reminder', icon: '📋', vendor: item.actualVendor, title: `${item.actualVendor} — still using it?`, body: `Last charge was ${Math.floor(daysSince)} days ago (AED ${item.amount.toFixed(2)}/mo). No recent activity detected.`, priority: 70, ts: new Date()
                         });
                     }
                 });
@@ -1994,7 +2073,7 @@ ${block}`;
                     const daysUntil = (dueDate - today) / (1000 * 60 * 60 * 24);
                     if (daysUntil > 0 && daysUntil <= 7) {
                         cards.push({
-                            type: 'reminder', icon: '📅', vendor: item.actualVendor, title: `${item.actualVendor} renews in ${Math.ceil(daysUntil)} day${Math.ceil(daysUntil)>1?'s':''}`, body: `AED ${item.amount.toFixed(2)} will be charged on ${dueDate.toDateString().substring(4)}.`, priority: 75, ts: new Date()
+                            type: 'reminder', icon: '📋', vendor: item.actualVendor, title: `${item.actualVendor} renews in ${Math.ceil(daysUntil)} day${Math.ceil(daysUntil)>1?'s':''}`, body: `AED ${item.amount.toFixed(2)} will be charged on ${dueDate.toDateString().substring(4)}.`, priority: 75, ts: new Date()
                         });
                     }
                 });
@@ -2066,9 +2145,9 @@ ${block}`;
             }
         };
 
-        /* ═══════════════════════════════════════════════════════════════════
+        /* ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
            SPOTIFY OAUTH (PKCE)
-        ═══════════════════════════════════════════════════════════════════ */
+        ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
         const SpotifyAuth = {
             clientId: '',
             redirectUri: API,  // 127.0.0.1:3001 locally, cloud URL on Render
@@ -2086,7 +2165,8 @@ ${block}`;
                     code_challenge: challenge,
                     scope: 'user-read-private user-read-email',
                     state
-                });                window.location = 'https://accounts.spotify.com/authorize?' + params;
+                });
+                window.location = 'https://accounts.spotify.com/authorize?' + params;
             },
             async handleCallback() {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -2176,9 +2256,9 @@ ${block}`;
             }
         };
 
-        /* ═══════════════════════════════════════════════════════════════════
+        /* ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
            WATCHLIST — stocks + podcasts the user wants to track
-        ═══════════════════════════════════════════════════════════════════ */
+        ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
         const Watchlist = {
             _key: 'ariaWatchlist',
             get() {
@@ -2260,7 +2340,8 @@ ${block}`;
             async init() {
                 this.render();
                 // Push existing watchlist to backend on page load
-                const wl = this.get();                fetch(API + '/api/watchlist', {
+                const wl = this.get();
+                fetch(API + '/api/watchlist', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: 'default', ...wl })
@@ -2321,11 +2402,11 @@ ${block}`;
             }
         };
 
-        /* ═══════════════════════════════════════════════════════════════════
+        /* ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
            BACKEND AGENT (Node.js server on port 3001)
            Polls for alerts generated by the server-side email agents.
            Server checks Gmail every 5 min even when ARIA tab is closed.
-        ═══════════════════════════════════════════════════════════════════ */
+        ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
         const BackendAgent = {
             url: API,
             lastAlertTime: 0,
@@ -2434,7 +2515,8 @@ ${block}`;
 
             _notify(alert) {
                 if (!('Notification' in window) || Notification.permission !== 'granted') return;
-                try {                    new Notification('ARIA', {
+                try {
+                    new Notification('ARIA', {
                         body: (alert.title || '') + '\n' + (alert.body || ''),
                         tag: alert.id || String(Date.now())
                     });
@@ -2481,9 +2563,9 @@ ${block}`;
             }
         };
 
-        /* ═══════════════════════════════════════════════════════════════════
+        /* ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
            DEMO MODE
-        ═══════════════════════════════════════════════════════════════════ */
+        ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
         function loadDemoMode() {
             S.mode = 'demo';
             // Use rolling dates relative to today so intelligence agents fire correctly
@@ -2543,9 +2625,9 @@ ${block}`;
             renderFeed();
         }
 
-        /* ═══════════════════════════════════════════════════════════════════
+        /* ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
            UI & NAVIGATION
-        ═══════════════════════════════════════════════════════════════════ */
+        ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
         function showSetup(app) {
             const modal = document.getElementById('setupModal');
             const title = document.getElementById('setupTitle');
@@ -2608,7 +2690,8 @@ ${block}`;
                         updateAppStatuses();
                         BackendAgent.register().catch(() => {});
                         // Show brief toast instead of blocking alert
-                        const t = document.createElement('div');                        t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#22c55e;color:#000;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:9999;pointer-events:none';
+                        const t = document.createElement('div');
+                        t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#22c55e;color:#000;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:9999;pointer-events:none';
                         t.textContent = '✓ OpenAI connected';
                         document.body.appendChild(t);
                         setTimeout(() => t.remove(), 2500);
@@ -2763,6 +2846,13 @@ ${block}`;
             const totalMo = uniqueSubs.reduce((s,i)=>s+(i.amount||0),0);
             const savingsCards = cards.filter(c=>c.type==='savings');
             const potentialSavings = savingsCards.reduce((s,c)=>s+(c.savingsAmount||0),0);
+            // Update profile stats
+            const pms = document.getElementById('profileMonthlySpend');
+            const psc = document.getElementById('profileSubCount');
+            const psav = document.getElementById('profileSavings');
+            if (pms && totalMo > 0) pms.textContent = 'AED ' + totalMo.toFixed(0);
+            if (psc) psc.textContent = uniqueSubs.length || '—';
+            if (psav) psav.textContent = potentialSavings > 0 ? 'AED ' + potentialSavings.toFixed(0) : '—';
 
             let html = `<div class="feed-title">What ARIA found</div>`;
             if(totalMo > 0){
@@ -2782,7 +2872,8 @@ ${block}`;
                 // Action button labels by card type
                 const actionMap = {
                     alert:   { primary: 'View breakdown →',    secondary: 'Dismiss' },
-                    savings:      { primary: 'Show me how →',       secondary: 'It\'s intentional' },                    reminder:     { primary: 'View details →',      secondary: 'Remind me later' },
+                    savings:      { primary: 'Show me how →',       secondary: 'It\'s intentional' },
+                    reminder:     { primary: 'View details →',      secondary: 'Remind me later' },
                     insight:      { primary: 'See full breakdown →',secondary: 'Got it' },
                     travel:       { primary: 'Book now →',          secondary: 'Set alert' },
                     news:         { primary: 'Learn more →',        secondary: 'Dismiss' },
@@ -2956,7 +3047,8 @@ ${block}`;
                             </div>
                             ${summaryHtml}
                             ${storiesHtml}
-                            <button class="btn btn-ghost" style="width:100%;margin-top:10px;font-size:11px" onclick="this.closest('.card').remove()">Dismiss</button>                        </div>`;
+                            <button class="btn btn-ghost" style="width:100%;margin-top:10px;font-size:11px" onclick="this.closest('.card').remove()">Dismiss</button>
+                        </div>`;
                         return;
                     }
 
@@ -3012,7 +3104,7 @@ ${block}`;
                     </div>`;
                 });
             }
-            // ── SUBSCRIPTIONS FOUND section ──────────────────────────────
+            // ────── SUBSCRIPTIONS FOUND section ──────────────────────────────────────────
             const subs = S.data.items.filter(i => i.isRecurring && i.amount > 0);
             const uniqueSubsMap = new Map();
             subs.forEach(i => {
@@ -3036,7 +3128,7 @@ ${block}`;
                 html += `</div>`;
             }
 
-            // ── ONE-TIME SPEND section ──────────────────────────────────
+            // ────── ONE-TIME SPEND section ──────────────────────────────────────────────
             const oneTime = S.data.items.filter(i => !i.isRecurring && i.amount > 0);
             if (oneTime.length > 0) {
                 const totalOneTime = oneTime.reduce((s,i) => s + i.amount, 0);
@@ -3058,7 +3150,7 @@ ${block}`;
             updateSyncBar();
         }
 
-        // ── card index so action buttons can find their card data ────────
+        // ────── card index so action buttons can find their card data ──────────────
         let _cardCache = [];
 
         function cardAction(type, idx) {
@@ -3130,7 +3222,8 @@ ${block}`;
                             <div style="font-size:13px;font-weight:600;color:#f1f5f9">AED ${upcoming.amount.toFixed(2)}</div>
                         </div>
                         <div style="display:flex;justify-content:space-between">
-                            <div style="font-size:12px;color:#64748b">Billing</div>                            <div style="font-size:13px;color:#f1f5f9">${upcoming.billingPeriod||'monthly'}</div>
+                            <div style="font-size:12px;color:#64748b">Billing</div>
+                            <div style="font-size:13px;color:#f1f5f9">${upcoming.billingPeriod||'monthly'}</div>
                         </div>
                     </div>`;
                     if (history.length > 1) {
@@ -3181,170 +3274,7 @@ ${block}`;
         }
 
         function closeDrawer() {
-            const drawer = document.getElementById('detailDrawer');
-            const panel = document.getElementById('drawerPanel');
-            if (panel) panel.style.transform = 'translateY(100%)';
-            setTimeout(() => { drawer.style.display = 'none'; }, 300);
-        }
-
-        function switchScreen(screenName) {
-            const screens = document.querySelectorAll('.screen');
-            screens.forEach(screen => screen.classList.remove('active'));
-            const targetScreen = document.getElementById(screenName);
-            if (targetScreen) targetScreen.classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            if (screenName === 'dashboard') {
-                document.querySelectorAll('[onclick*="switchScreen(\'dashboard\')"]')[0]?.classList.add('active');
-            } else if (screenName === 'chat') {
-                document.querySelectorAll('[onclick*="switchScreen(\'chat\')"]')[0]?.classList.add('active');
-            } else if (screenName === 'apps') {
-                document.querySelectorAll('[onclick*="switchScreen(\'apps\')"]')[0]?.classList.add('active');
-            } else if (screenName === 'profile') {
-                document.querySelectorAll('[onclick*="switchScreen(\'profile\')"]')[0]?.classList.add('active');
-            }
-        }
-
-        function updateTime() {
-            const now = new Date();
-            const h = now.getHours();
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const ampm = h >= 12 ? 'PM' : 'AM';
-            const displayH = h % 12 || 12;
-            document.getElementById('currentTime').textContent = `${displayH}:${minutes} ${ampm}`;
-            // Update greeting with time of day + name
-            const tod = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-            const name = S.auth && S.auth.user ? ', ' + S.auth.user.split(' ')[0] : '';
-            const el = document.getElementById('greetingText');
-            if(el) el.textContent = tod + name;
-            // Update avatar initial
-            const av = document.getElementById('avatarInitial');
-            if(av && S.auth && S.auth.user) av.textContent = S.auth.user[0].toUpperCase();
-        }
-
-        function buildChatContext() {
-            const items = S.data.items || [];
-            const upcoming = S.data.upcomingRaw || [];
-            const overdue = S.data.overdueAlerts || [];
-            const today = new Date().toISOString().slice(0, 10);
-
-            // Monthly spend summary
-            const byMonth = {};
-            items.forEach(i => {
-                const m = (i.dateStr || '').slice(0, 7);
-                if (!byMonth[m]) byMonth[m] = 0;
-                byMonth[m] += i.amount || 0;
-            });
-            const months = Object.keys(byMonth).sort().reverse().slice(0, 3);
-            const monthSummary = months.map(m => `${m}: AED ${byMonth[m].toFixed(0)}`).join(', ');
-
-            // Top vendors
-            const byVendor = {};
-            items.forEach(i => { if (!byVendor[i.actualVendor]) byVendor[i.actualVendor] = 0; byVendor[i.actualVendor] += i.amount || 0; });
-            const topVendors = Object.entries(byVendor).sort((a,b) => b[1]-a[1]).slice(0, 10)
-                .map(([v, a]) => `${v}: AED ${a.toFixed(0)}`).join(', ');
-
-            // By category this month
-            const thisMonth = today.slice(0, 7);
-            const byCat = {};
-            items.filter(i => (i.dateStr||'').startsWith(thisMonth)).forEach(i => {
-                const c = i.category || 'other';
-                if (!byCat[c]) byCat[c] = 0;
-                byCat[c] += i.amount || 0;
-            });
-            const catSummary = Object.entries(byCat).sort((a,b) => b[1]-a[1])
-                .map(([c, a]) => `${c}: AED ${a.toFixed(0)}`).join(', ');
-
-            // Subscriptions
-            const subs = [...new Map(items.filter(i => i.isRecurring).map(i => [i.actualVendor, i])).values()];
-            const subList = subs.map(i => `${i.actualVendor} AED ${i.amount}/mo`).join(', ');
-
-            // Upcoming & overdue
-            const upcomingList = upcoming.slice(0,5).map(i => `${i.actualVendor} AED ${i.amount} due ${i.dueDate||i.dateStr}`).join(', ');
-            const overdueList = overdue.map(i => `${i.actualVendor} AED ${i.amount}`).join(', ');
-
-            return `You are ARIA, a sharp personal finance AI agent. Today is ${today}.
-
-USER'S FINANCIAL DATA (from Gmail):
-- Total transactions tracked: ${items.length}
-- Emails scanned: ${S.data.emailCount || 0}
-- Monthly spend (last 3 months): ${monthSummary || 'no data yet'}
-- This month by category: ${catSummary || 'no data yet'}
-- Top vendors (all time): ${topVendors || 'no data yet'}
-- Active subscriptions: ${subList || 'none detected'}
-- Upcoming payments: ${upcomingList || 'none'}
-- Overdue: ${overdueList || 'none'}
-
-RULES:
-- Be direct and specific. Use their actual numbers.
-- Keep answers to 2-4 sentences unless a breakdown is asked for.
-- If data is missing, say so honestly — don't guess.
-- Currency is AED unless stated otherwise.
-- You can suggest actions (cancel X, dispute Y) but you can't do them yet.`;
-        }
-
-        async function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-            if (!message) return;
-
-            const messagesContainer = document.querySelector('.chat-messages');
-
-            // Show user message
-            const userMsg = document.createElement('div');
-            userMsg.className = 'message user';
-            userMsg.innerHTML = `<div class="message-bubble">${escapeHtml(message)}</div>`;
-            messagesContainer.appendChild(userMsg);
-            input.value = '';
-            input.disabled = true;
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            // Show typing indicator
-            const typingMsg = document.createElement('div');
-            typingMsg.className = 'message aria';
-            typingMsg.id = 'typingIndicator';
-            typingMsg.innerHTML = `<div class="message-bubble" style="color:#64748b">ARIA is thinking<span id="typingDots">...</span></div>`;
-            messagesContainer.appendChild(typingMsg);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            // Animate dots
-            let dotCount = 0;
-            const dotTimer = setInterval(() => {
-                dotCount = (dotCount + 1) % 4;
-                const dots = document.getElementById('typingDots');
-                if (dots) dots.textContent = '.'.repeat(dotCount + 1);
-            }, 400);
-
-            try {
-                let reply = '';
-
-                // Detect trip/travel intent → add to watchlist (agent-first, not search-on-demand)
-                const travelKeywords = /\b(going to|travelling to|traveling to|visiting|trip to|vacation in|holiday in|staying in|need.*stay|find.*stay|looking for.*stay|place.*stay)\b/i;
-                if (travelKeywords.test(message) && S.cfg.openaiKey) {
-                    clearInterval(dotTimer);
-                    const typingEl = document.getElementById('typingIndicator');
-                    if (typingEl) typingEl.querySelector('.message-bubble').textContent = '✈️ Parsing your trip details...';
-
-                    try {
-                        // Ask GPT to extract destination, dates, guests from natural language
-                        const parseRes = await fetch('https://api.openai.com/v1/chat/completions', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.cfg.openaiKey },
-                            body: JSON.stringify({
-                                model: 'gpt-4o-mini',
-                                messages: [{ role: 'user', content: `Today is ${new Date().toISOString().slice(0,10)}. Extract trip parameters from: "${message}"\nReturn ONLY JSON: {"destination":"city","checkin":"YYYY-MM-DD or null","checkout":"YYYY-MM-DD or null","guests":2}` }],
-                                temperature: 0.1, max_tokens: 80, response_format: { type: 'json_object' }
-                            })
-                        });
-                        const parseData = await parseRes.json();
-                        const parsed = JSON.parse(parseData.choices[0].message.content || '{}');
-
-                        if (parsed.destination) {
-                            // Add to watchlist
-                            TripWatchlist._trips.push({ destination: parsed.destination, checkin: parsed.checkin || '', checkout: parsed.checkout || '', guests: parsed.guests || 2, addedAt: new Date().toISOString() });
-                            await TripWatchlist.save();
-                            TripWatchlist.render();
-
-                            if (typingEl) typingEl.remove();
-                            const ariaMsg = document.createElement('div');
-                            ariaMsg.className = 'message aria';
+            const drawer = document.getElementBymessage aria';
                             const ci = parsed.checkin ? ` from ${parsed.checkin}` : '';
                             const co = parsed.checkout ? ` to ${parsed.checkout}` : '';
                             ariaMsg.innerHTML = `<div class="message-bubble">✓ Added <strong>${parsed.destination}</strong>${ci}${co} to your Trip Watchlist. I'll research the best stays tonight and push picks to your Home feed. You can also tap <span style="color:#6366f1;cursor:pointer" onclick="switchScreen('apps')">Apps → Trips</span> to run it now.</div>`;
@@ -3472,13 +3402,22 @@ RULES:
             if (btn) { btn.textContent = '↻ Re-sync'; btn.disabled = false; }
         }
 
+        function askSuggestion(btn) {
+            const text = btn.textContent.replace(/^[^\w]+ /, '').trim();
+            const input = document.getElementById('chatInput');
+            if (input) { input.value = text; sendMessage(); }
+            const sugEl = document.getElementById('chatSuggestions');
+            if (sugEl) sugEl.style.display = 'none';
+        }
+
         function updateAppStatuses() {
             const gmailEl   = document.getElementById('gmailStatus');
             const openaiEl  = document.getElementById('openaiStatus');
             const spotifyEl = document.getElementById('spotifyStatus');
 
             // Gmail
-            const gtoken = JSON.parse(localStorage.getItem('aria_gtoken') || 'null');            const gmailOk = gtoken && gtoken.expiry > Date.now();
+            const gtoken = JSON.parse(localStorage.getItem('aria_gtoken') || 'null');
+            const gmailOk = gtoken && gtoken.expiry > Date.now();
             if (gmailEl) {
                 gmailEl.innerHTML = gmailOk
                     ? `<span style="color:#22c55e">● Connected</span>`
@@ -3517,6 +3456,12 @@ RULES:
                     ? `<span style="color:#22c55e">● ${tripCount} trip${tripCount>1?'s':''} on watchlist</span>`
                     : `<span style="color:#64748b">No trips — add in Trips section below</span>`;
             }
+
+            // Profile page stats
+            const profileGmailEl = document.getElementById('profileGmailStatus');
+            const profileSpotifyEl = document.getElementById('profileSpotifyStatus');
+            if (profileGmailEl) profileGmailEl.innerHTML = gmailOk ? `<span style="color:#22c55e">● Connected</span>` : `<span style="color:#64748b">Not connected</span>`;
+            if (profileSpotifyEl) profileSpotifyEl.innerHTML = spotifyOk ? `<span style="color:#22c55e">● Connected</span>` : `<span style="color:#64748b">Not connected</span>`;
         }
 
         function updateSyncBar() {
@@ -3541,9 +3486,9 @@ RULES:
             return div.innerHTML;
         }
 
-        /* ═══════════════════════════════════════════════════════════════════
+        /* ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
            PROPERTY WATCHLIST
-        ═══════════════════════════════════════════════════════════════════ */
+        ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
         const PropertyWatchlist = {
             _searches: [],
 
@@ -3611,9 +3556,9 @@ RULES:
             }
         };
 
-        /* ═══════════════════════════════════════════════════════════════════
+        /* ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
            TRIP WATCHLIST — agent-first, conversational destination input
-        ═══════════════════════════════════════════════════════════════════ */
+        ════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
         const TripWatchlist = {
             _guests: 2,
             _trips: [],
@@ -3625,7 +3570,7 @@ RULES:
                 confirmed: false
             },
 
-            // ── Conversation helpers ──────────────────────────────────────
+            // ────── Conversation helpers ──────────────────────────────────────────────────────
             _addMsg(text, type) {
                 const box = document.getElementById('tripConvoMessages');
                 if (!box) return;
@@ -3652,11 +3597,12 @@ RULES:
                 const det = document.getElementById('tripConvoDetails');
                 if (det) det.style.display = 'block';
                 // Disable destination input now
-                const inp = document.getElementById('tripConvoInput');                if (inp) { inp.disabled = true; }
+                const inp = document.getElementById('tripConvoInput');
+                if (inp) { inp.disabled = true; }
                 setTimeout(() => document.getElementById('newTripCheckin')?.focus(), 100);
             },
 
-            // ── GPT call to parse destination intent ──────────────────────
+            // ────── GPT call to parse destination intent ──────────────────────────────────────
             async _parseIntent(userMsg) {
                 if (!S.cfg.openaiKey) {
                     // No GPT — accept as-is
@@ -3695,7 +3641,7 @@ Return ONLY valid JSON:
                 }
             },
 
-            // ── Main convo reply handler ──────────────────────────────────
+            // ────── Main convo reply handler ────────────────────────────────────────────────────
             async convoReply() {
                 const inp = document.getElementById('tripConvoInput');
                 const msg = (inp?.value || '').trim();
@@ -3730,7 +3676,7 @@ Return ONLY valid JSON:
                 }
             },
 
-            // ── Add confirmed trip to watchlist ───────────────────────────
+            // ────── Add confirmed trip to watchlist ──────────────────────────────────────────────
             addTrip() {
                 if (!this._dc.destination) {
                     this.setStatus('Describe your destination first', '#ef4444');
@@ -3760,7 +3706,7 @@ Return ONLY valid JSON:
                 document.getElementById('newTripBudget').value   = '';
             },
 
-            // ── Watchlist CRUD ────────────────────────────────────────────
+            // ────── Watchlist CRUD ──────────────────────────────────────────────────────────────
             adjustGuests(delta) {
                 this._guests = Math.max(1, Math.min(16, this._guests + delta));
                 const el = document.getElementById('newTripGuestsDisplay');
@@ -3823,10 +3769,11 @@ Return ONLY valid JSON:
                 this.render();
             },
 
-            // ── Run agent now ─────────────────────────────────────────────
+            // ────── Run agent now ──────────────────────────────────────────────────────────────
             async runNow(btn) {
                 if (!S.cfg.openaiKey) {
-                    this.setStatus('OpenAI key required — tap Setup in Connected Apps above', '#f59e0b');                    return;
+                    this.setStatus('OpenAI key required — tap Setup in Connected Apps above', '#f59e0b');
+                    return;
                 }
                 if (!this._trips.length) {
                     this.setStatus('Add at least one trip first', '#f59e0b');
