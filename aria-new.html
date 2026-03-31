@@ -7,22 +7,38 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg: #07070e;
+            --surface: #0d0d18;
+            --surface-2: #131322;
+            --surface-hover: #181830;
+            --border: rgba(255,255,255,0.07);
+            --border-strong: rgba(255,255,255,0.13);
+            --accent: #13c9a8;
+            --accent-dim: rgba(19,201,168,0.1);
+            --accent-glow: rgba(19,201,168,0.18);
+            --text-1: #eef2f7;
+            --text-2: #8494a8;
+            --text-3: #44556a;
+            --red: #f56565;
+            --green: #34d399;
+            --amber: #fbbf24;
+            --blue: #60a5fa;
+            --purple: #a78bfa;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #07070d;
-            color: #f1f5f9;
+            background: var(--bg);
+            color: var(--text-1);
             overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        body.no-scroll {
-            overflow: hidden;
-        }
+        body.no-scroll { overflow: hidden; }
 
         .container {
             width: 100%;
@@ -30,36 +46,37 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(ellipse at 30% 20%, rgba(20,184,166,0.07) 0%, transparent 55%),
-                        radial-gradient(ellipse at 75% 80%, rgba(99,102,241,0.06) 0%, transparent 50%),
-                        #07070d;
+            background: var(--bg);
+        }
+
+        @media (min-width: 600px) {
+            .container {
+                background:
+                    radial-gradient(ellipse at 25% 15%, rgba(19,201,168,0.05) 0%, transparent 55%),
+                    radial-gradient(ellipse at 75% 85%, rgba(99,102,241,0.04) 0%, transparent 55%),
+                    #05050c;
+            }
         }
 
         .app-wrapper {
             width: 100%;
             max-width: 480px;
             height: 100vh;
-            background: #0a0a0f;
+            background: var(--bg);
             display: flex;
             flex-direction: column;
             position: relative;
-            box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 32px 64px rgba(0,0,0,0.7);
-            border-radius: 0;
+            overflow: hidden;
         }
 
         @media (min-width: 600px) {
             .app-wrapper {
-                height: calc(100vh - 0px);
-                border-radius: 0;
+                box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 40px 80px rgba(0,0,0,0.8);
             }
         }
 
         @media (max-width: 500px) {
-            .app-wrapper {
-                max-width: 100%;
-                box-shadow: none;
-                border-radius: 0;
-            }
+            .app-wrapper { max-width: 100%; }
         }
 
         .screen {
@@ -69,712 +86,484 @@
             overflow: hidden;
         }
 
-        .screen.active {
-            display: flex;
-        }
+        .screen.active { display: flex; }
 
-        /* Setup Modal */
+        /* ── SETUP MODAL ── */
         .setup-modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            inset: 0;
+            background: rgba(0,0,0,0.88);
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
         }
 
-        .setup-modal.active {
-            display: flex;
-        }
+        .setup-modal.active { display: flex; }
 
         .setup-modal-content {
-            background: #111118;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 32px;
+            background: var(--surface-2);
+            border: 1px solid var(--border-strong);
+            border-radius: 20px;
+            padding: 28px;
             max-width: 90%;
-            width: 400px;
+            width: 380px;
             max-height: 80vh;
             overflow-y: auto;
             scrollbar-width: thin;
         }
 
-        .setup-modal-content::-webkit-scrollbar {
-            width: 6px;
-        }
+        .setup-modal-content::-webkit-scrollbar { width: 4px; }
+        .setup-modal-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
 
-        .setup-modal-content::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-        }
-
-        .setup-modal-header {
-            margin-bottom: 24px;
-        }
-
-        .setup-modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 8px;
-        }
-
-        .setup-modal-desc {
-            font-size: 13px;
-            color: #64748b;
-            line-height: 1.5;
-        }
+        .setup-modal-header { margin-bottom: 20px; }
+        .setup-modal-title { font-size: 18px; font-weight: 700; color: var(--text-1); margin-bottom: 6px; letter-spacing: -0.3px; }
+        .setup-modal-desc { font-size: 13px; color: var(--text-2); line-height: 1.55; }
 
         .setup-steps {
-            background: rgba(20, 184, 166, 0.05);
-            border: 1px solid rgba(20, 184, 166, 0.2);
-            border-radius: 10px;
-            padding: 16px;
-            margin-bottom: 20px;
+            background: var(--accent-dim);
+            border: 1px solid rgba(19,201,168,0.18);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
             font-size: 12px;
-            color: #cbd5e1;
-            line-height: 1.6;
+            color: var(--text-2);
+            line-height: 1.65;
         }
 
-        .setup-steps ol {
-            margin-left: 20px;
-            margin-top: 8px;
-        }
+        .setup-steps ol { margin-left: 18px; margin-top: 6px; }
+        .setup-steps li { margin-bottom: 4px; }
+        .setup-steps a { color: var(--accent); text-decoration: none; }
+        .setup-steps a:hover { text-decoration: underline; }
 
-        .setup-steps li {
-            margin-bottom: 6px;
-        }
-
-        .setup-steps a {
-            color: #14b8a6;
-            text-decoration: none;
-        }
-
-        .setup-steps a:hover {
-            text-decoration: underline;
-        }
-
-        .setup-input-group {
-            margin-bottom: 20px;
-        }
+        .setup-input-group { margin-bottom: 16px; }
 
         .setup-input-label {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
-            color: #cbd5e1;
-            margin-bottom: 8px;
+            color: var(--text-2);
+            margin-bottom: 7px;
             display: block;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
         }
 
         .setup-input {
             width: 100%;
-            padding: 12px;
-            background: #0a0a0f;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #f1f5f9;
+            padding: 11px 13px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-1);
             font-size: 13px;
-            font-family: 'Inter', sans-serif;
+            font-family: inherit;
             outline: none;
-            transition: all 0.3s ease;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .setup-input:focus {
-            border-color: rgba(20, 184, 166, 0.5);
-            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+            border-color: rgba(19,201,168,0.4);
+            box-shadow: 0 0 0 3px rgba(19,201,168,0.08);
         }
 
-        .setup-actions {
-            display: flex;
-            gap: 8px;
-        }
+        .setup-actions { display: flex; gap: 8px; }
 
         .setup-btn {
             flex: 1;
-            padding: 12px;
+            padding: 11px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
             font-size: 13px;
+            font-family: inherit;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            transition: all 0.2s;
         }
 
-        .setup-btn-primary {
-            background: linear-gradient(135deg, #14b8a6, #06b6d4);
-            color: #fff;
-        }
+        .setup-btn-primary { background: var(--accent); color: #000; }
+        .setup-btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .setup-btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-2); }
+        .setup-btn-secondary:hover { background: var(--surface); }
 
-        .setup-btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
-        }
-
-        .setup-btn-secondary {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #cbd5e1;
-        }
-
-        .setup-btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        /* Sync Overlay */
+        /* ── SYNC OVERLAY ── */
         .sync-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            inset: 0;
+            background: rgba(0,0,0,0.97);
             z-index: 999;
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
         }
 
-        .sync-overlay.active {
-            display: flex;
-        }
+        .sync-overlay.active { display: flex; }
 
-        .sync-logo {
-            font-size: 64px;
-            animation: pulse 2s ease-in-out infinite;
-        }
+        .sync-logo { font-size: 52px; animation: pulse 2s ease-in-out infinite; }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.05); }
+            50% { opacity: 0.65; transform: scale(1.06); }
         }
 
-        .sync-message {
-            font-size: 14px;
-            color: #cbd5e1;
-            text-align: center;
-        }
+        .sync-message { font-size: 14px; color: var(--text-2); text-align: center; }
 
         .sync-progress {
-            width: 280px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
+            width: 220px;
+            height: 3px;
+            background: rgba(255,255,255,0.07);
             border-radius: 2px;
             overflow: hidden;
         }
 
         .sync-progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #14b8a6, #06b6d4);
+            background: var(--accent);
             border-radius: 2px;
             transition: width 0.3s ease;
             width: 0%;
         }
 
         .sync-cancel {
-            padding: 8px 16px;
+            padding: 7px 16px;
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            color: #64748b;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-3);
             font-size: 12px;
+            font-family: inherit;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
         }
 
-        .sync-cancel:hover {
-            border-color: rgba(20, 184, 166, 0.3);
-            color: #14b8a6;
-        }
+        .sync-cancel:hover { border-color: rgba(19,201,168,0.3); color: var(--accent); }
 
-        /* Onboarding Screen */
-        #onboarding {
-            background: #0a0a0f;
-        }
+        /* ── ONBOARDING ── */
+        #onboarding { background: var(--bg); }
 
         .onboarding-header {
-            padding: 32px 24px 24px;
+            padding: 52px 24px 32px;
             text-align: center;
         }
 
         .onboarding-header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #14b8a6, #06b6d4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 38px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 10px;
+            color: var(--accent);
         }
 
         .onboarding-header p {
-            font-size: 14px;
-            color: #64748b;
+            font-size: 15px;
+            color: var(--text-2);
+            letter-spacing: -0.1px;
         }
 
         .onboarding-content {
             flex: 1;
             overflow-y: auto;
-            padding: 0 16px;
+            padding: 0 20px;
             scrollbar-width: none;
         }
 
-        .onboarding-content::-webkit-scrollbar {
-            display: none;
-        }
+        .onboarding-content::-webkit-scrollbar { display: none; }
 
-        .apps-section {
-            margin-bottom: 32px;
-        }
+        .apps-section { margin-bottom: 24px; }
 
         .section-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
-            color: #64748b;
+            color: var(--text-3);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 24px 8px 16px;
+            letter-spacing: 1px;
+            margin: 20px 2px 12px;
         }
 
         .apps-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .app-card {
-            background: #111118;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             text-align: center;
-            position: relative;
         }
 
-        .app-card:hover {
-            background: #1a1a26;
-            border-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
+        .app-card:hover { background: var(--surface-2); border-color: var(--border-strong); transform: translateY(-2px); }
 
         .app-icon {
-            font-size: 28px;
-            width: 40px;
-            height: 40px;
+            font-size: 22px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 8px;
-            background: rgba(20, 184, 166, 0.1);
+            border-radius: 12px;
+            background: var(--accent-dim);
         }
 
-        .app-card.connected .app-icon {
-            background: rgba(34, 197, 94, 0.1);
-        }
+        .app-card.connected .app-icon { background: rgba(52,211,153,0.1); }
+        .app-name { font-size: 11px; font-weight: 600; color: var(--text-1); }
+        .app-status { font-size: 10px; color: var(--text-3); }
+        .app-card.connected .app-status { color: var(--green); font-weight: 600; }
 
-        .app-name {
-            font-size: 11px;
-            font-weight: 600;
-            color: #f1f5f9;
-        }
-
-        .app-status {
-            font-size: 10px;
-            color: #64748b;
-        }
-
-        .app-card.connected .app-status {
-            color: #22c55e;
-            font-weight: 600;
-        }
-
-        .onboarding-footer {
-            padding: 24px;
-            background: linear-gradient(to top, #0a0a0f, transparent);
-        }
+        .onboarding-footer { padding: 20px 20px 32px; }
 
         .onboarding-cta {
             width: 100%;
-            padding: 16px 20px;
-            background: linear-gradient(135deg, #14b8a6, #06b6d4);
+            padding: 15px 20px;
+            background: var(--accent);
             border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-weight: 600;
-            font-size: 14px;
+            border-radius: 14px;
+            color: #000;
+            font-weight: 700;
+            font-size: 15px;
+            font-family: inherit;
             cursor: pointer;
             margin-bottom: 12px;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
+            letter-spacing: -0.2px;
         }
 
-        .onboarding-cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(20, 184, 166, 0.3);
-        }
+        .onboarding-cta:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 10px 24px rgba(19,201,168,0.22); }
+        .onboarding-footer p { font-size: 12px; color: var(--text-3); text-align: center; }
 
-        .onboarding-footer p {
-            font-size: 12px;
-            color: #64748b;
-            text-align: center;
-        }
-
-        /* Dashboard Screen */
-        #dashboard {
-            background: #0a0a0f;
-            flex-direction: column;
-        }
+        /* ── DASHBOARD ── */
+        #dashboard { background: var(--bg); flex-direction: column; }
 
         .demo-banner {
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            padding: 12px 16px;
+            background: rgba(52,211,153,0.07);
+            border-bottom: 1px solid rgba(52,211,153,0.12);
+            padding: 8px 16px;
             text-align: center;
-            font-size: 12px;
-            color: #22c55e;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--green);
+            letter-spacing: 0.1px;
         }
 
         .top-bar {
-            padding: 16px 20px;
+            padding: 13px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid var(--border);
         }
 
         .top-bar-left {
-            font-size: 18px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #14b8a6, #06b6d4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: var(--accent);
         }
 
-        .top-bar-center {
-            flex: 1;
-            text-align: center;
-        }
+        .top-bar-center { flex: 1; text-align: center; }
+        .greeting { font-size: 13px; font-weight: 600; color: var(--text-1); }
+        .time { font-size: 11px; color: var(--text-3); margin-top: 1px; }
 
-        .greeting {
-            font-size: 14px;
-            font-weight: 600;
-            color: #f1f5f9;
-        }
-
-        .time {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .top-bar-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .top-bar-right { display: flex; align-items: center; gap: 10px; }
 
         .avatar {
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #14b8a6, #06b6d4);
+            background: var(--accent-dim);
+            border: 1px solid rgba(19,201,168,0.25);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-            color: #fff;
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--accent);
             cursor: pointer;
         }
 
-        .notification-bell {
-            position: relative;
-            cursor: pointer;
-            font-size: 18px;
-            transition: transform 0.3s ease;
-        }
-
-        .notification-bell:hover {
-            transform: scale(1.1);
-        }
+        .notification-bell { position: relative; cursor: pointer; font-size: 18px; transition: transform 0.2s; }
+        .notification-bell:hover { transform: scale(1.1); }
 
         .notification-badge {
             position: absolute;
-            top: -4px;
-            right: -4px;
-            width: 18px;
-            height: 18px;
-            background: #ef4444;
+            top: -4px; right: -4px;
+            width: 16px; height: 16px;
+            background: var(--red);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 700;
             color: #fff;
         }
 
-        .search-bar {
-            margin: 16px;
-            position: relative;
-        }
+        .search-bar { margin: 12px 16px; position: relative; }
 
         .search-input {
             width: 100%;
-            padding: 12px 16px;
-            background: #111118;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 10px;
-            color: #f1f5f9;
+            padding: 11px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-1);
             font-size: 14px;
+            font-family: inherit;
             outline: none;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
+            cursor: pointer;
         }
 
-        .search-input::placeholder {
-            color: #64748b;
-        }
+        .search-input::placeholder { color: var(--text-3); }
 
         .search-input:focus {
-            border-color: rgba(20, 184, 166, 0.3);
-            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
-            background: #1a1a26;
+            border-color: rgba(19,201,168,0.3);
+            background: var(--surface-2);
+            box-shadow: 0 0 0 3px rgba(19,201,168,0.06);
         }
 
         .feed {
             flex: 1;
             overflow-y: auto;
-            padding: 0 16px 80px;
+            padding: 0 14px 80px;
             scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+            scrollbar-color: rgba(255,255,255,0.07) transparent;
         }
 
-        .feed::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .feed::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .feed::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-        }
+        .feed::-webkit-scrollbar { width: 3px; }
+        .feed::-webkit-scrollbar-track { background: transparent; }
+        .feed::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
 
         .feed-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: #64748b;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-3);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 24px 0 16px;
+            letter-spacing: 1px;
+            margin: 18px 2px 12px;
         }
 
         .feed-summary {
             display: flex;
             align-items: center;
-            background: rgba(20,184,166,0.06);
-            border: 1px solid rgba(20,184,166,0.15);
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 16px;
-            gap: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 14px;
         }
+
         .feed-sum-item { flex: 1; text-align: center; }
-        .feed-sum-val { display: block; font-size: 17px; font-weight: 700; color: #f1f5f9; }
-        .feed-sum-label { display: block; font-size: 10px; color: #64748b; margin-top: 2px; }
-        .feed-sum-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.08); }
 
-        .feed-empty {
-            text-align: center;
-            padding: 40px 20px;
-            color: #64748b;
+        .feed-sum-val {
+            display: block;
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text-1);
+            letter-spacing: -0.5px;
         }
 
-        /* Trip convo bubbles */
-        .tc-msg { font-size: 13px; line-height: 1.45; max-width: 88%; padding: 8px 11px; border-radius: 12px; word-break: break-word; }
-        .tc-aria { background: rgba(99,102,241,0.12); color: #c7d2fe; border-radius: 12px 12px 12px 3px; align-self: flex-start; }
-        .tc-user { background: rgba(255,255,255,0.06); color: #f1f5f9; border-radius: 12px 12px 3px 12px; align-self: flex-end; }
-        .tc-confirm { background: rgba(34,197,94,0.1); color: #86efac; border-radius: 12px; align-self: flex-start; font-size: 12px; border: 1px solid rgba(34,197,94,0.2); }
-        .tc-thinking { color: #475569; font-size: 12px; font-style: italic; align-self: flex-start; padding: 4px 2px; }
+        .feed-sum-label { display: block; font-size: 10px; color: var(--text-3); margin-top: 3px; font-weight: 500; }
+        .feed-sum-divider { width: 1px; height: 28px; background: var(--border); }
 
-        .feed-empty-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        .feed-empty-text {
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
+        .feed-empty { text-align: center; padding: 40px 20px; color: var(--text-2); }
+        .feed-empty-icon { font-size: 44px; margin-bottom: 14px; opacity: 0.35; }
+        .feed-empty-text { font-size: 14px; margin-bottom: 16px; color: var(--text-2); }
 
         .feed-empty-cta {
-            padding: 10px 16px;
-            background: linear-gradient(135deg, #14b8a6, #06b6d4);
-            color: #fff;
+            padding: 10px 20px;
+            background: var(--accent);
+            color: #000;
             border: none;
-            border-radius: 8px;
-            font-size: 12px;
+            border-radius: 10px;
+            font-size: 13px;
             font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
         }
 
-        .feed-empty-cta:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
-        }
+        .feed-empty-cta:hover { opacity: 0.9; }
 
+        /* ── TRIP CONVO BUBBLES ── */
+        .tc-msg { font-size: 13px; line-height: 1.45; max-width: 88%; padding: 8px 12px; border-radius: 12px; word-break: break-word; }
+        .tc-aria { background: var(--surface-2); color: #c7d2fe; border-radius: 4px 12px 12px 12px; align-self: flex-start; border: 1px solid var(--border); }
+        .tc-user { background: rgba(255,255,255,0.06); color: var(--text-1); border-radius: 12px 4px 12px 12px; align-self: flex-end; }
+        .tc-confirm { background: rgba(52,211,153,0.08); color: #86efac; border-radius: 12px; align-self: flex-start; font-size: 12px; border: 1px solid rgba(52,211,153,0.18); }
+        .tc-thinking { color: var(--text-3); font-size: 12px; font-style: italic; align-self: flex-start; padding: 4px 2px; }
+
+        /* ── CARDS ── */
         .card {
-            background: #111118;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-left: 3px solid;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 3px solid transparent;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            transition: background 0.2s, transform 0.2s, border-color 0.2s;
             position: relative;
         }
 
-        .card:hover {
-            background: #1a1a26;
-            border-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
+        .card:hover { background: var(--surface-2); border-color: var(--border-strong); transform: translateY(-1px); }
 
-        .card.alert {
-            border-left-color: #ef4444;
-            background: rgba(239, 68, 68, 0.05);
-        }
+        .card.alert   { border-left-color: var(--red); }
+        .card.savings { border-left-color: var(--green); }
+        .card.travel  { border-left-color: var(--blue); }
+        .card.reminder{ border-left-color: var(--amber); }
+        .card.insight { border-left-color: var(--purple); }
+        .card.news    { border-left-color: #22d3ee; }
 
-        .card.savings {
-            border-left-color: #22c55e;
-            background: rgba(34, 197, 94, 0.05);
-        }
-
-        .card.travel {
-            border-left-color: #3b82f6;
-            background: rgba(59, 130, 246, 0.05);
-        }
-
-        .card.reminder {
-            border-left-color: #f59e0b;
-            background: rgba(245, 158, 11, 0.05);
-        }
-
-        .card.insight {
-            border-left-color: #8b5cf6;
-            background: rgba(139, 92, 246, 0.05);
-        }
-
-        .card.news {
-            border-left-color: #06b6d4;
-            background: rgba(6, 182, 212, 0.05);
-        }
-
-        .card-timestamp {
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            font-size: 11px;
-            color: #64748b;
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            margin-right: 40px;
-        }
-
-        .card-icon {
-            font-size: 18px;
-        }
-
-        .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #f1f5f9;
-        }
-
-        .card-body {
-            font-size: 13px;
-            color: #cbd5e1;
-            line-height: 1.5;
-            margin-bottom: 12px;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 8px;
-        }
+        .card-timestamp { position: absolute; top: 14px; right: 14px; font-size: 10px; color: var(--text-3); font-weight: 500; }
+        .card-header { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; margin-right: 48px; }
+        .card-icon { font-size: 15px; line-height: 1; }
+        .card-title { font-size: 14px; font-weight: 600; color: var(--text-1); line-height: 1.3; letter-spacing: -0.1px; }
+        .card-body { font-size: 13px; color: var(--text-2); line-height: 1.55; margin-bottom: 12px; }
+        .card-actions { display: flex; gap: 8px; }
 
         .btn {
             flex: 1;
             padding: 8px 12px;
-            border-radius: 8px;
+            border-radius: 9px;
             border: none;
             font-size: 12px;
             font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #14b8a6, #06b6d4);
-            color: #fff;
-        }
+        .btn-primary { background: var(--accent); color: #000; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-2); }
+        .btn-ghost:hover { background: var(--surface-2); border-color: var(--border-strong); color: var(--text-1); }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
-        }
-
-        .btn-ghost {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #cbd5e1;
-        }
-
-        .btn-ghost:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-
-        /* Bottom Navigation */
+        /* ── BOTTOM NAV ── */
         .bottom-nav {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 60px;
-            background: #0a0a0f;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            height: 62px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-around;
             align-items: center;
+            z-index: 10;
         }
 
         .nav-item {
@@ -785,55 +574,59 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            color: #64748b;
-            transition: all 0.3s ease;
-            font-size: 20px;
+            color: var(--text-3);
+            transition: color 0.2s;
             gap: 4px;
         }
 
-        .nav-item.active {
-            color: #14b8a6;
+        .nav-item.active { color: var(--accent); }
+        .nav-item:hover { color: var(--text-2); }
+        .nav-item.active:hover { color: var(--accent); }
+
+        .nav-item svg {
+            width: 21px;
+            height: 21px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.75;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
-        .nav-label {
-            font-size: 10px;
-            font-weight: 600;
-        }
+        .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1px; }
 
-        .nav-item:hover {
-            color: #14b8a6;
-        }
-
-        /* Chat Screen */
-        #chat {
-            background: #0a0a0f;
-            flex-direction: column;
-        }
+        /* ── CHAT SCREEN ── */
+        #chat { background: var(--bg); flex-direction: column; }
 
         .chat-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 13px 16px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
         .chat-header-back {
-            font-size: 20px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 9px;
             cursor: pointer;
-            color: #64748b;
-            transition: color 0.3s ease;
+            color: var(--text-2);
+            font-size: 14px;
+            transition: all 0.2s;
+            flex-shrink: 0;
         }
 
-        .chat-header-back:hover {
-            color: #14b8a6;
-        }
+        .chat-header-back:hover { color: var(--text-1); border-color: var(--border-strong); }
 
-        .chat-header-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #f1f5f9;
-        }
+        .chat-header-info { flex: 1; }
+        .chat-header-title { font-size: 15px; font-weight: 700; color: var(--text-1); letter-spacing: -0.3px; }
+        .chat-header-subtitle { font-size: 11px; color: var(--text-3); margin-top: 1px; }
 
         .chat-messages {
             flex: 1;
@@ -841,68 +634,48 @@
             padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+            scrollbar-color: rgba(255,255,255,0.07) transparent;
         }
 
-        .chat-messages::-webkit-scrollbar {
-            width: 6px;
-        }
+        .chat-messages::-webkit-scrollbar { width: 3px; }
+        .chat-messages::-webkit-scrollbar-track { background: transparent; }
+        .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
 
-        .chat-messages::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-        }
-
-        .message {
-            display: flex;
-            gap: 8px;
-            animation: slideIn 0.3s ease;
-        }
+        .message { display: flex; gap: 8px; animation: slideIn 0.25s ease; }
+        .message.user { justify-content: flex-end; }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message.user {
-            justify-content: flex-end;
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .message-bubble {
             max-width: 80%;
-            padding: 12px 14px;
-            border-radius: 12px;
-            line-height: 1.5;
+            padding: 11px 14px;
+            line-height: 1.55;
             font-size: 14px;
             word-wrap: break-word;
         }
 
         .message.aria .message-bubble {
-            background: #1a1a26;
-            color: #f1f5f9;
-            border: 1px solid rgba(20, 184, 166, 0.2);
+            background: var(--surface-2);
+            color: var(--text-1);
+            border: 1px solid var(--border);
+            border-radius: 4px 14px 14px 14px;
         }
 
         .message.user .message-bubble {
-            background: linear-gradient(135deg, #14b8a6, #06b6d4);
-            color: #fff;
+            background: var(--accent);
+            color: #000;
+            font-weight: 500;
+            border-radius: 14px 4px 14px 14px;
         }
 
         .chat-input-area {
-            padding: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 12px 14px 16px;
+            border-top: 1px solid var(--border);
             display: flex;
             gap: 8px;
             align-items: flex-end;
@@ -910,274 +683,230 @@
 
         .chat-input {
             flex: 1;
-            padding: 12px 14px;
-            background: #111118;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 10px;
-            color: #f1f5f9;
+            padding: 11px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-1);
             font-size: 14px;
+            font-family: inherit;
             outline: none;
             resize: none;
             max-height: 100px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
         }
 
-        .chat-input:focus {
-            border-color: rgba(20, 184, 166, 0.3);
-            background: #1a1a26;
-        }
-
-        .chat-input::placeholder {
-            color: #64748b;
-        }
+        .chat-input:focus { border-color: rgba(19,201,168,0.3); background: var(--surface-2); }
+        .chat-input::placeholder { color: var(--text-3); }
 
         .chat-send {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #14b8a6, #06b6d4);
+            background: var(--accent);
             border: none;
-            border-radius: 10px;
-            color: #fff;
+            border-radius: 11px;
+            color: #000;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 700;
+            transition: all 0.2s;
         }
 
-        .chat-send:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
-        }
+        .chat-send:hover { opacity: 0.9; transform: translateY(-1px); }
 
         .chat-voice {
             width: 40px;
             height: 40px;
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: #64748b;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            color: var(--text-3);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 18px;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
         }
 
-        .chat-voice:hover {
-            color: #14b8a6;
-            border-color: rgba(20, 184, 166, 0.3);
-        }
+        .chat-voice:hover { color: var(--accent); border-color: rgba(19,201,168,0.3); }
 
-        /* Apps Screen */
-        #apps {
-            background: #0a0a0f;
-            padding: 16px;
-            flex-direction: column;
-        }
+        /* ── APPS SCREEN ── */
+        #apps { background: var(--bg); flex-direction: column; overflow: hidden; }
 
         .apps-header {
-            font-size: 14px;
-            font-weight: 600;
-            color: #64748b;
+            padding: 16px 18px 13px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-3);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 16px;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
         }
 
         .apps-list {
             flex: 1;
             overflow-y: auto;
+            padding: 12px 14px 80px;
             scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.07) transparent;
         }
 
+        .apps-list::-webkit-scrollbar { width: 3px; }
+        .apps-list::-webkit-scrollbar-track { background: transparent; }
+        .apps-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
         .app-list-item {
-            background: #111118;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 10px;
-            padding: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 13px 14px;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background 0.2s;
         }
 
-        .app-list-item:hover {
-            background: #1a1a26;
-            transform: translateX(4px);
-        }
+        .app-list-item:hover { background: var(--surface-2); }
 
         .app-list-icon {
-            font-size: 24px;
-        }
-
-        .app-list-info {
-            flex: 1;
-        }
-
-        .app-list-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: #f1f5f9;
-        }
-
-        .app-list-status {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .app-list-actions {
+            font-size: 20px;
+            width: 38px;
+            height: 38px;
             display: flex;
-            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: var(--surface-2);
+            flex-shrink: 0;
         }
+
+        .app-list-info { flex: 1; min-width: 0; }
+        .app-list-name { font-size: 14px; font-weight: 600; color: var(--text-1); }
+        .app-list-status { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+
+        .app-list-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
         .app-list-btn {
             padding: 6px 12px;
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            color: #cbd5e1;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-2);
             font-size: 11px;
             font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
+            white-space: nowrap;
         }
 
-        .app-list-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
+        .app-list-btn:hover { background: var(--surface-2); border-color: var(--border-strong); color: var(--text-1); }
 
-        .app-list-btn.disconnect {
-            color: #ef4444;
-            border-color: rgba(239, 68, 68, 0.2);
-        }
+        .app-list-btn.disconnect { color: var(--red); border-color: rgba(245,101,101,0.2); }
+        .app-list-btn.disconnect:hover { background: rgba(245,101,101,0.08); }
 
-        .app-list-btn.disconnect:hover {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.4);
-        }
+        /* ── PROFILE SCREEN ── */
+        #profile { background: var(--bg); flex-direction: column; overflow-y: auto; padding: 24px 16px 80px; }
 
-        /* Profile Screen */
-        #profile {
-            background: #0a0a0f;
-            padding: 16px;
-            flex-direction: column;
-        }
-
-        .profile-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
+        .profile-header { text-align: center; margin-bottom: 28px; }
 
         .profile-avatar {
-            width: 64px;
-            height: 64px;
+            width: 66px;
+            height: 66px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #14b8a6, #06b6d4);
+            background: var(--accent-dim);
+            border: 2px solid rgba(19,201,168,0.25);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 28px;
-            color: #fff;
-            margin: 0 auto 16px;
+            font-size: 26px;
+            color: var(--accent);
+            margin: 0 auto 14px;
         }
 
-        .profile-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 4px;
-        }
-
-        .profile-email {
-            font-size: 13px;
-            color: #64748b;
-        }
+        .profile-name { font-size: 18px; font-weight: 700; color: var(--text-1); margin-bottom: 4px; letter-spacing: -0.3px; }
+        .profile-email { font-size: 13px; color: var(--text-3); }
 
         .profile-section {
-            background: #111118;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 10px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
             overflow: hidden;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .profile-item {
             padding: 14px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background 0.2s;
         }
 
-        .profile-item:last-child {
-            border-bottom: none;
-        }
-
-        .profile-item:hover {
-            background: rgba(20, 184, 166, 0.05);
-        }
-
-        .profile-item-label {
-            font-size: 14px;
-            color: #f1f5f9;
-        }
-
-        .profile-item-arrow {
-            color: #64748b;
-            font-size: 16px;
-        }
+        .profile-item:last-child { border-bottom: none; }
+        .profile-item:hover { background: var(--surface-2); }
+        .profile-item-label { font-size: 14px; color: var(--text-1); }
+        .profile-item-arrow { color: var(--text-3); font-size: 14px; }
 
         .logout-btn {
             width: 100%;
-            padding: 12px;
+            padding: 13px;
             background: transparent;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 10px;
-            color: #ef4444;
+            border: 1px solid rgba(245,101,101,0.22);
+            border-radius: 13px;
+            color: var(--red);
             font-weight: 600;
             font-size: 14px;
+            font-family: inherit;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
         }
 
-        .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.1);
+        .logout-btn:hover { background: rgba(245,101,101,0.07); }
+
+        /* ── DETAIL DRAWER ── */
+        #detailDrawer {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 500;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
         }
 
-        @media (max-width: 500px) {
-            .app-wrapper {
-                border-radius: 0;
-            }
+        #drawerPanel {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            width: 100%;
+            max-width: 480px;
+            background: var(--surface-2);
+            border-radius: 20px 20px 0 0;
+            border-top: 1px solid var(--border-strong);
+            padding: 24px 20px;
+            transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         @keyframes pulse-border {
-            0%, 100% {
-                border-color: rgba(20, 184, 166, 0.3);
-                box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.1);
-            }
-            50% {
-                border-color: rgba(20, 184, 166, 0.5);
-                box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
-            }
+            0%, 100% { border-color: rgba(19,201,168,0.3); box-shadow: 0 0 0 0 rgba(19,201,168,0.08); }
+            50% { border-color: rgba(19,201,168,0.5); box-shadow: 0 0 0 4px rgba(19,201,168,0.06); }
         }
 
-        .search-input:focus {
-            animation: pulse-border 2s infinite;
-        }
+        html { scroll-behavior: smooth; }
 
-        html {
-            scroll-behavior: smooth;
-        }
     </style>
 </head>
 <body>
@@ -1251,7 +980,7 @@
                         <span style="font-size:11px;color:#475569">or</span>
                         <div style="flex:1;height:1px;background:rgba(255,255,255,0.08)"></div>
                     </div>
-                    <button onclick="loadDemoMode()" style="width:100%;padding:14px;background:rgba(20,184,166,0.1);border:1px solid rgba(20,184,166,0.3);border-radius:14px;color:#14b8a6;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(20,184,166,0.18)'" onmouseout="this.style.background='rgba(20,184,166,0.1)'">✨ Try Demo — see ARIA in action</button>
+                    <button onclick="loadDemoMode()" style="width:100%;padding:14px;background:rgba(19,201,168,0.09);border:1px solid rgba(19,201,168,0.22);border-radius:14px;color:#13c9a8;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit" onmouseover="this.style.background='rgba(20,184,166,0.18)'" onmouseout="this.style.background='rgba(20,184,166,0.1)'">✨ Try Demo — see ARIA in action</button>
                     <p style="margin-top:10px;font-size:11px;color:#475569">No sign-in needed · Realistic sample data · Instant load</p>
                 </div>
             </div>
@@ -1274,13 +1003,13 @@
                     <input type="text" class="search-input" placeholder="Ask ARIA anything..." id="dashboardSearch" onclick="switchScreen('chat')">
                 </div>
 
-                <div id="syncBar" style="display:none;background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.2);border-radius:12px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px">
-                    <div style="font-size:12px;color:#64748b;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1" id="lastSyncLabel">Never synced</div>
-                    <button onclick="resyncGmail()" id="resyncBtn" style="flex-shrink:0;padding:6px 14px;background:linear-gradient(135deg,#14b8a6,#06b6d4);border:none;border-radius:8px;color:#000;font-size:12px;font-weight:700;cursor:pointer">↻ Re-sync</button>
+                <div id="syncBar" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+                    <div style="font-size:12px;color:var(--text-2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1" id="lastSyncLabel">Never synced</div>
+                    <button onclick="resyncGmail()" id="resyncBtn" style="flex-shrink:0;padding:6px 14px;background:var(--accent);border:none;border-radius:8px;color:#000;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">↻ Re-sync</button>
                 </div>
 
                 <div class="feed" id="feed">
-                    <div class="feed-title">What ARIA found</div>
+                    <div class="feed-title">ARIA's feed</div>
                     <div class="feed-empty">
                         <div class="feed-empty-icon">📧</div>
                         <div class="feed-empty-text">Connect Gmail to see your bills and subscriptions</div>
@@ -1290,20 +1019,20 @@
 
                 <div class="bottom-nav">
                     <div class="nav-item active" onclick="switchScreen('dashboard')">
-                        🏠
+                        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                         <div class="nav-label">Home</div>
                     </div>
                     <div class="nav-item" onclick="switchScreen('chat')">
-                        🔍
-                        <div class="nav-label">Search</div>
+                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <div class="nav-label">Ask</div>
                     </div>
                     <div class="nav-item" onclick="switchScreen('apps')">
-                        ⊞
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
                         <div class="nav-label">Apps</div>
                     </div>
                     <div class="nav-item" onclick="switchScreen('profile')">
-                        👤
-                        <div class="nav-label">Profile</div>
+                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <div class="nav-label">You</div>
                     </div>
                 </div>
             </div>
@@ -1312,7 +1041,10 @@
             <div id="chat" class="screen">
                 <div class="chat-header">
                     <div class="chat-header-back" onclick="switchScreen('dashboard')">←</div>
-                    <div class="chat-header-title">ARIA Chat</div>
+                    <div class="chat-header-info">
+                        <div class="chat-header-title">Ask ARIA</div>
+                        <div class="chat-header-subtitle">Powered by your financial data</div>
+                    </div>
                 </div>
 
                 <div class="chat-messages" id="chatMessages">
@@ -1349,7 +1081,7 @@
                         </div>
                         <div class="app-list-actions" style="display:flex;gap:6px;flex-wrap:wrap">
                             <button class="app-list-btn" onclick="showSetup('Gmail')">Setup</button>
-                            <button class="app-list-btn" onclick="reconnectGmail()" style="background:rgba(239,68,68,0.15);color:#ef4444;border-color:rgba(239,68,68,0.3)" title="Clear stored login and reconnect with fresh permissions">Reconnect</button>
+                            <button class="app-list-btn" onclick="reconnectGmail()" style="background:transparent;color:var(--text-2);border-color:var(--border)" title="Clear stored login and reconnect with fresh permissions">Reconnect</button>
                         </div>
                     </div>
                     <div class="app-list-item">
@@ -1383,7 +1115,7 @@
                         </div>
                     </div>
 
-                    <div style="margin:14px 0 6px;font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:1px;font-weight:600">Background Agent</div>
+                    <div style="margin:18px 0 6px;font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:1px;font-weight:600">Background Agent</div>
                     <div class="app-list-item" style="border-color:rgba(20,184,166,0.2)">
                         <div class="app-list-icon" style="background:rgba(20,184,166,0.12)">⚡</div>
                         <div class="app-list-info">
@@ -1428,7 +1160,7 @@
                     <!-- Podcasts -->
                     <div style="background:#111827;border:1px solid #1e293b;border-radius:14px;padding:16px;margin-bottom:12px">
                         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-                            <span style="font-size:18px">😙️</span>
+                            <span style="font-size:18px">🎙️</span>
                             <div>
                                 <div style="font-size:14px;font-weight:600;color:#f1f5f9">Podcast Watchlist</div>
                                 <div style="font-size:11px;color:#64748b">Agent extracts market insights from episodes weekly</div>
@@ -1505,7 +1237,7 @@
                                 <div>
                                     <label style="font-size:10px;color:#475569;display:block;margin-bottom:3px">Max $/night</label>
                                     <input id="newTripBudget" type="number" placeholder="Any"
-                                        style="width:100%;background:#0a0a12;border:1px solid #1e293b;border-radius:7px;padding:8px 9px;color:#f1f5f9;font-size:12px;font-family:inherit;box-sizing:border-box">
+                                        style="width:100%;background:#0a0a12;border:1px solid #1e293b;border-radius:7px;padding:8px 9px;color:#f1f5f9;font-size:12px;font-family:inherit;box-sizing:border-box"}>
                                 </div>
                             </div>
                             <button onclick="TripWatchlist.addTrip()"
@@ -1527,20 +1259,20 @@
 
                 <div class="bottom-nav">
                     <div class="nav-item" onclick="switchScreen('dashboard')">
-                        🏠
+                        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                         <div class="nav-label">Home</div>
                     </div>
                     <div class="nav-item" onclick="switchScreen('chat')">
-                        🔍
-                        <div class="nav-label">Search</div>
+                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <div class="nav-label">Ask</div>
                     </div>
                     <div class="nav-item active" onclick="switchScreen('apps')">
-                        ⊞
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
                         <div class="nav-label">Apps</div>
                     </div>
                     <div class="nav-item" onclick="switchScreen('profile')">
-                        👤
-                        <div class="nav-label">Profile</div>
+                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <div class="nav-label">You</div>
                     </div>
                 </div>
             </div>
@@ -1617,20 +1349,20 @@
 
                 <div class="bottom-nav">
                     <div class="nav-item" onclick="switchScreen('dashboard')">
-                        🏠
+                        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                         <div class="nav-label">Home</div>
                     </div>
                     <div class="nav-item" onclick="switchScreen('chat')">
-                        🔍
-                        <div class="nav-label">Search</div>
+                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <div class="nav-label">Ask</div>
                     </div>
                     <div class="nav-item" onclick="switchScreen('apps')">
-                        ⊞
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
                         <div class="nav-label">Apps</div>
                     </div>
                     <div class="nav-item active" onclick="switchScreen('profile')">
-                        👤
-                        <div class="nav-label">Profile</div>
+                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <div class="nav-label">You</div>
                     </div>
                 </div>
             </div>
@@ -1935,7 +1667,7 @@ ${block}`;
                     for (let i = 0; i < emails.length; i += 4) {
                         const items = await AIEngine.analyze(emails.slice(i, i + 4));
                         allItems.push(...items);
-                        showSyncOverlay(`Analyzing ${Math.min(i + 4, emails.length)}/${emails.length}…`, (65 + Math.round(i / emails.length * 30)) + '%');
+                        showSyncOverlay(`Analyzing ${Math.min(i + 4, emails.length)}/${emails.length}���…', (65 + Math.round(i / emails.length * 30)) + '%');
                     }
                     S.data.overdueAlerts = allItems.filter(x => x.isOverdue || x.emailType === 'overdue_notice');
                     S.data.upcomingRaw = allItems.filter(x => !x.isOverdue && (x.emailType === 'invoice' || x.emailType === 'upcoming') && x.amount > 0 && x.actualVendor !== 'Unknown');
@@ -1969,7 +1701,7 @@ ${block}`;
                         if (is403) tip = 'Gmail API access denied. Make sure Gmail API is enabled in Google Cloud Console, then reconnect.';
                         else if (is401) tip = 'Login expired. Please reconnect Gmail.';
                         else tip = 'Something went wrong connecting to Gmail (' + e.message + '). Try reconnecting.';
-                        feed.innerHTML = `<div class="feed-title">What ARIA found</div>
+                        feed.innerHTML = `<div class="feed-title">ARIA's feed</div>
                             <div class="feed-empty">
                                 <div class="feed-empty-icon">⚠️</div>
                                 <div class="feed-empty-text" style="color:#ef4444;margin-bottom:8px">${tip}</div>
@@ -2008,7 +1740,7 @@ ${block}`;
                     const key = item.actualVendor;
                     if (!byVendor[key]) byVendor[key] = {};
                     if (!byVendor[key][ym]) byVendor[key][ym] = 0;
-                    byVendor[key][ym] += item.amount;
+                    byVendor_key][ym] += item.amount;
                 });
                 for (const vendor in byVendor) {
                     const months = Object.keys(byVendor[vendor]).sort().reverse();
@@ -2053,27 +1785,43 @@ ${block}`;
             unusedSubscriptionDetector(items) {
                 const cards = [];
                 const today = new Date();
-                items.filter(i => i.isRecurring).forEach(item => {
-                    const itemDate = new Date(item.dateStr);
-                    const daysSince = (today - itemDate) / (1000 * 60 * 60 * 24);
-                    if (daysSince >= 60) {
+                const monthAgo = new Date(today.getTime() - 60*86400*1000);
+                const subs = items.filter(i => i.isRecurring);
+                const vendors = {};
+                subs.forEach(i => {
+                    if (!vendors[i.actualVendor]) vendors[i.actualVendor] = { count: 0, amount: 0, last: '' };
+                    vendors[i.actualVendor].count++;
+                    vendors[i.actualVendor].amount = i.amount;
+                    if (i.dateStr > vendors[i.actualVendor].last) vendors[i.actualVendor].last = i.dateStr;
+                });
+                for (const vendor in vendors) {
+                    const v = vendors[vendor];
+                    if (v.last && new Date(v.last) < monthAgo) {
+                        const annualSave = (v.amount * 12).toFixed(0);
                         cards.push({
-                            type: 'reminder', icon: '📅', vendor: item.actualVendor, title: `${item.actualVendor} — still using it?`, body: `Last charge was ${Math.floor(daysSince)} days ago (AED ${item.amount.toFixed(2)}/mo). No recent activity detected.`, priority: 70, ts: new Date()
+                            type: 'savings', icon: '💸', vendor, title: `Unused: ${vendor}`, body: `${vendor} hasn't charged in 60+ days. Still needing it? Cancelling could save AED ${annualSave}/year.`, priority: 72, savingsAmount: parseFloat(annualSave), ts: new Date()
                         });
                     }
-                });
+                }
                 return cards;
             },
 
             renewalAlerts(upcomingRaw) {
                 const cards = [];
                 const today = new Date();
-                upcomingRaw.forEach(item => {
-                    const dueDate = new Date(item.dueDate || item.dateStr);
-                    const daysUntil = (dueDate - today) / (1000 * 60 * 60 * 24);
-                    if (daysUntil > 0 && daysUntil <= 7) {
+                const thirdays = new Date(today.getTime() + 30 * 86400*<00);
+                upcomingRaw.forEach(u => {
+                    if (u.dueDate) {
+                        const due = new Date(u.dueDate);
+                        if (due <= thirdays) {
+                            const daysUntil = Math.round((due.getTime() - today.getTime()) / 86400/1000);
+                            cards.push({
+                                type: 'travel', icon: '💪', vendor: u.actualVendor, title: `${u.actualVendor} bill due ${daysUntil <= 0 ? 'today' : 'in ' + daysUntil + ' days'}`, body: `AED| ${u.amount.toFixed(2)} due on ${u.dueDate}`, priority: 85, ts: new Date()
+                            });
+                        }
+                    } else {
                         cards.push({
-                            type: 'reminder', icon: '📅', vendor: item.actualVendor, title: `${item.actualVendor} renews in ${Math.ceil(daysUntil)} day${Math.ceil(daysUntil)>1?'s':''}`, body: `AED ${item.amount.toFixed(2)} will be charged on ${dueDate.toDateString().substring(4)}.`, priority: 75, ts: new Date()
+                            type: 'reminder', icon: '📥', vendor: u.actualVendor, title: `${u.actualVendor} renewing soon`, body: `AED| ${u.amount.toFixed(2)} - ${u.productDescription}`, priority: 75, ts: new Date()
                         });
                     }
                 });
@@ -2081,277 +1829,352 @@ ${block}`;
             },
 
             overdueDetector(overdueAlerts) {
-                const cards = [];
-                // Skip if vendor looks like a person's name (2-3 words, title case, no digits)
-                const looksLikePerson = v => {
-                    const words = (v || '').trim().split(/\s+/);
-                    if (words.length < 2 || words.length > 3) return false;
-                    const allTitleCase = words.every(w => /^[A-Z][a-z]+$/.test(w));
-                    const noDigits = !/\d/.test(v);
-                    return allTitleCase && noDigits;
-                };
-                overdueAlerts.forEach(item => {
-                    if (looksLikePerson(item.actualVendor)) return; // skip person names
-                    if (!item.actualVendor || item.actualVendor === 'Unknown') return;
-                    cards.push({
-                        type: 'alert', icon: '🚨', vendor: item.actualVendor, title: `${item.actualVendor} payment overdue`, body: `Outstanding balance: AED ${item.amount.toFixed(2)}. Pay now to avoid penalties.`, priority: 95, ts: new Date()
-                    });
-                });
-                return cards;
+                return overdueAlerts.map(x => ({
+                    type: 'alert', icon: '⚠️', vendor: x.actualVendor, title: `Overdue: ${x.actualVendor}`, body: `AED| ${x.amount.toFixed(2)} - ${x.subject}`, priority: 95, ts: new Date()
+                }));
             },
 
             spendInsights(items) {
                 const cards = [];
-                const byCategory = {};
-                items.forEach(item => {
-                    const ym = (item.dateStr || '').slice(0, 7);
-                    const key = `${item.category}|${ym}`;
-                    if (!byCategory[key]) byCategory[key] = 0;
-                    byCategory[key] += item.amount;
-                });
-                // Also track transaction count per category per month to avoid false spikes
-                const catCounts = {};
-                items.forEach(item => {
-                    const ym = (item.dateStr || '').slice(0, 7);
-                    const key = `${item.category}|${ym}`;
-                    if (!catCounts[key]) catCounts[key] = 0;
-                    catCounts[key]++;
-                });
-                const cats = {};
-                for (const key in byCategory) {
-                    const [cat, ym] = key.split('|');
-                    if (!cats[cat]) cats[cat] = {};
-                    cats[cat][ym] = { total: byCategory[key], count: catCounts[key] || 0 };
-                }
-                for (const cat in cats) {
-                    const months = Object.keys(cats[cat]).sort().reverse();
-                    if (months.length >= 2) {
-                        const cur = cats[cat][months[0]]?.total || 0;
-                        const prev = cats[cat][months[1]]?.total || 0;
-                        const curCount = cats[cat][months[0]]?.count || 0;
-                        const prevCount = cats[cat][months[1]]?.count || 0;
-                        // Require at least 2 transactions in BOTH months to avoid false spikes
-                        // and cap spike % at 500% to avoid absurd numbers from sparse data
-                        const pct = Math.round((cur - prev) / prev * 100);
-                        if (prev > 0 && cur > prev * 1.4 && curCount >= 2 && prevCount >= 2 && pct <= 500) {
-                            const catLabels = { streaming:'Streaming', software_ai:'Software & AI', telecom:'Telecom', utilities:'Utilities', shopping:'Shopping', food:'Food delivery', health:'Health', finance:'Finance', hotels_travel:'Travel', transport:'Transport', other:'Other' };
-                            cards.push({
-                                type: 'insight', icon: '🧠', category: cat, title: `${catLabels[cat]||cat} spending up ${pct}%`, body: `AED ${cur.toFixed(0)} this month vs AED ${prev.toFixed(0)} last month — ${pct}% increase.`, priority: 60, ts: new Date()
-                            });
-                        }
-                    }
+                const today = new Date();
+                const thisMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+                const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                const lastMonthStr = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, '0')}`;
+                const thisMonthTotal = items.filter(i => (i.dateStr || '').startsWith(thisMonth)).reduce((s, i) => s + i.amount, 0);
+                const lastMonthTotal = items.filter(i => (i.dateStr || '').startsWith(lastMonthStr)).reduce((s, i) => s + i.amount, 0);
+                const recurringTotal = items.filter(i => i.isRecurring && (i.dateStr || '').startsWith(thisMonth)).reduce((s, i) => s + i.amount, 0);
+                if (thisMonthTotal > 0 && lastMonthTotal > 0) {
+                    const delta = thisMonthTotal - lastMonthTotal;
+                    const pct = Math.abs(Math.round(delta / lastMonthTotal * 100));
+                    cards.push({
+                        type: 'insight', icon: '💠', vendor: 'Monthly Summary', title: `${delta >= 0 ? 'Spending up' : 'Spending down'} ${pct}% vs last month`, body: `AED| ${thisMonthTotal.toFixed(2)} this month (vs AED ${lastMonthTotal.toFixed(2)} last month). ${recurringTotal > 0 ? 'Recurring: AED ' + recurringTotal.toFixed(2) : ''}`, priority: 50, ts: new Date()
+                    });
                 }
                 return cards;
             }
         };
 
         /* ═══════════════════════════════════════════════════════════════════
-           SPOTIFY OAUTH (PKCE)
+           BACKEND AGENT
         ═══════════════════════════════════════════════════════════════════ */
-        const SpotifyAuth = {
-            clientId: '',
-            redirectUri: API,  // 127.0.0.1:3001 locally, cloud URL on Render
-            async connect() {
-                const verifier = this._generateCodeVerifier(128);
-                const challenge = await this._generateCodeChallenge(verifier);
-                // Encode verifier + clientId into the state param so it survives the cross-origin redirect
-                // (localStorage at localhost:3001 is not readable at 127.0.0.1:3001)
-                const state = btoa(JSON.stringify({ v: verifier, c: this.clientId }));
-                const params = new URLSearchParams({
-                    client_id: this.clientId,
-                    response_type: 'code',
-                    redirect_uri: this.redirectUri,
-                    code_challenge_method: 'S256',
-                    code_challenge: challenge,
-                    scope: 'user-read-private user-read-email',
-                    state
-                });
-                window.location = 'https://accounts.spotify.com/authorize?' + params;
-            },
-            async handleCallback() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const code = urlParams.get('code');
-                if (!code) return false;
-                // Recover verifier and clientId from state parameter (works across origins)
-                let verifier = '', clientId = this.clientId;
-                const stateParam = urlParams.get('state');
-                if (stateParam) {
-                    try {
-                        const s = JSON.parse(atob(stateParam));
-                        verifier = s.v || '';
-                        clientId = s.c || clientId;
-                    } catch(e) {}
-                }
-                if (!verifier || !clientId) { console.error('Spotify: missing verifier/clientId in state'); return false; }
-                const response = await fetch('https://accounts.spotify.com/api/token', {
+        const BackendAgent = {
+            async register() {
+                if (!S.auth.token) return;
+                const r = await fetch(API + '/api/agent/register', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        client_id: clientId,
-                        grant_type: 'authorization_code',
-                        code,
-                        redirect_uri: this.redirectUri,
-                        code_verifier: verifier
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.auth.token },
+                    body: JSON.stringify({
+                        gmailToken: GAuth.token,
+                        googleClientId: S.cfg.googleClientId,
+                        openaiKey: S.cfg.openaiKey
                     })
                 });
-                const data = await response.json();
-                if (data.error) { console.error('Spotify token error:', data.error); return false; }
-                // Store token — also save clientId so future sessions remember it
-                localStorage.setItem('aria_spotify', JSON.stringify({ token: data.access_token, refresh: data.refresh_token }));
-                const creds = JSON.parse(localStorage.getItem('aria_credentials') || '{}');
-                creds.spotifyClientId = clientId;
-                localStorage.setItem('aria_credentials', JSON.stringify(creds));
-                window.history.replaceState({}, '', window.location.pathname);
-                // Push Spotify token to backend so podcast agent can use it
-                fetch(API + '/api/register-spotify', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: 'default', spotifyToken: data.access_token, spotifyRefreshToken: data.refresh_token || '' })
-                }).catch(() => {});
-                updateAppStatuses();
-                return true;
-            },
-            async getProfile() {
-                const token = JSON.parse(localStorage.getItem('aria_spotify') || '{}').token;
-                if (!token) return null;
-                const r = await fetch('https://api.spotify.com/v1/me', { headers: { Authorization: 'Bearer ' + token } });
-                return r.json();
-            },
-            async getSubscriptionInfo() {
-                const profile = await this.getProfile();
-                return profile ? { plan: profile.product, name: profile.display_name, email: profile.email, country: profile.country } : null;
-            },
-            async refreshToken() {
-                const sp = JSON.parse(localStorage.getItem('aria_spotify') || '{}');
-                const creds = JSON.parse(localStorage.getItem('aria_credentials') || '{}');
-                if (!sp.refresh || !creds.spotifyClientId) return false;
-                try {
-                    const r = await fetch('https://accounts.spotify.com/api/token', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: sp.refresh, client_id: creds.spotifyClientId })
-                    });
-                    const data = await r.json();
-                    if (!data.access_token) return false;
-                    const newSp = { token: data.access_token, refresh: data.refresh_token || sp.refresh };
-                    localStorage.setItem('aria_spotify', JSON.stringify(newSp));
-                    // Re-register fresh token with backend
-                    fetch(API + '/api/register-spotify', {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ userId: 'default', spotifyToken: data.access_token, spotifyRefreshToken: newSp.refresh, spotifyClientId: creds.spotifyClientId })
-                    }).catch(() => {});
-                    console.log('[Spotify] Token refreshed successfully');
-                    return true;
-                } catch(e) { console.error('[Spotify] Refresh failed:', e); return false; }
-            },
-            _generateCodeVerifier(length) {
-                const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-                let result = '';
-                for (let i = 0; i < length; i++) result += charset.charAt(Math.floor(Math.random() * charset.length));
-                return result;
-            },
-            async _generateCodeChallenge(verifier) {
-                const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
-                const challenge = String.fromCharCode.apply(null, new Uint8Array(hash));
-                return btoa(challenge).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+                const data = await r.json();
+                if (data.ok) { console.log('Agent registered, session:', data.sessionId); }
             }
         };
 
         /* ═══════════════════════════════════════════════════════════════════
-           WATCHLIST — stocks + podcasts the user wants to track
+           AUTH SYSTEM
         ═══════════════════════════════════════════════════════════════════ */
-        const Watchlist = {
-            _key: 'ariaWatchlist',
-            get() {
-                try { return JSON.parse(localStorage.getItem(this._key)) || { stocks: [], podcasts: [] }; }
-                catch(e) { return { stocks: [], podcasts: [] }; }
-            },
-            save(wl) {
-                localStorage.setItem(this._key, JSON.stringify(wl));
-                this.render();
-                // Push to backend so the agent can use it
-                fetch(API + '/api/watchlist', {
+        async function loginWithGoogle() {
+            if (!S.cfg.googleClientId) {
+                alert('Please set your Google Client ID in Settings first.'); return;
+            }
+            try {
+                const token = await GAuth.connect();
+                S.auth.token = token;
+                const r = await fetch('https://www.googleapis.com/oauth2/v1/userinfo', { headers: { Authorization: 'Bearer ' + token } });
+                const user = await r.json();
+                S.auth.user = user;
+                const r2 = await fetch(API + '/api/auth/google', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: 'default', ...wl })
-                }).catch(() => {});
-            },
-            addStock() {
-                const input = document.getElementById('stockInput');
-                const ticker = (input.value || '').trim().toUpperCase();
-                if (!ticker) return;
-                const wl = this.get();
-                if (!wl.stocks.includes(ticker)) { wl.stocks.push(ticker); this.save(wl); }
-                input.value = '';
-                input.focus();
-            },
-            removeStock(ticker) {
-                const wl = this.get();
-                wl.stocks = wl.stocks.filter(s => s !== ticker);
-                this.save(wl);
-            },
-            addPodcast() {
-                const input = document.getElementById('podcastInput');
-                const name = (input.value || '').trim();
-                if (!name) return;
-                const wl = this.get();
-                if (!wl.podcasts.includes(name)) { wl.podcasts.push(name); this.save(wl); }
-                input.value = '';
-                input.focus();
-            },
-            removePodcast(name) {
-                const wl = this.get();
-                wl.podcasts = wl.podcasts.filter(p => p !== name);
-                this.save(wl);
-            },
-            render() {
-                const wl = this.get();
-                const stocksEl = document.getElementById('stockChips');
-                const podcastsEl = document.getElementById('podcastChips');
-                if (stocksEl) {
-                    stocksEl.innerHTML = wl.stocks.length
-                        ? wl.stocks.map(s => `<span style="display:inline-flex;align-items:center;gap:5px;background:#1e293b;border:1px solid #334155;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600;color:#f1f5f9">${s}<span onclick="Watchlist.removeStock('${s}')" style="cursor:pointer;color:#64748b;font-size:14px;line-height:1">×</span></span>`).join('')
-                        : '<span style="font-size:12px;color:#475569">No stocks yet — add a ticker above</span>';
-                }
-                if (podcastsEl) {
-                    podcastsEl.innerHTML = wl.podcasts.length
-                        ? wl.podcasts.map(p => `<span style="display:inline-flex;align-items:center;gap:5px;background:#1e293b;border:1px solid #334155;border-radius:20px;padding:4px 10px;font-size:12px;color:#f1f5f9">${p}<span onclick="Watchlist.removePodcast('${p.replace(/'/g,"\\'")}')  " style="cursor:pointer;color:#64748b;font-size:14px;line-height:1">×</span></span>`).join('')
-                        : '<span style="font-size:12px;color:#475569">No podcasts yet — add a show above</span>';
-                }
-            },
-            runNow(btn) {
-                const wl = this.get();
-                if (!wl.stocks.length && !wl.podcasts.length) {
-                    alert('Add at least one stock or podcast first.');
-                    return;
-                }
-                if (btn) { btn.textContent = '⏳ Running… check Home feed in ~30s'; btn.disabled = true; }
-                fetch(API + '/api/intelligence/run', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: 'default' })
-                }).then(r => {
-                    // Success — re-enable button after 40s
-                    setTimeout(() => { if(btn){ btn.textContent = '⚡ Run Intelligence Scan Now'; btn.disabled = false; } }, 40000);
-                }).catch(() => {
-                    if(btn){ btn.textContent = '⚡ Run Intelligence Scan Now'; btn.disabled = false; }
-                    alert('Backend needs a restart to pick up the new server.js — double-click START-ARIA-AGENT.command first.');
+                    body: JSON.stringify({ access_token: token })
                 });
-            },
-            async init() {
-                this.render();
-                // Push existing watchlist to backend on page load
-                const wl = this.get();
-                fetch(API + '/api/watchlist', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: 'default', ...wl })
-                }).catch(() => {});
-                // Auto-refresh Spotify token if expired, then register fresh token with backend
-                const sp = JSON.parse(localStorage.getItem('aria_spotify') || '{}');
-                if (sp.token) {
-                    // Check if token is still valid, refresh if not
-                    const meRes = await fetch('https://api.spotify.com/v1/me', { headers: { Authorization: 'Bearer ' + sp.token } }).catch(() => ({ status: 0 }));
-                    if (meRes.status === 401) {
+                const authData = await r2.json();
+                if (authData.token) S.auth.token = authData.token;
+                GAuth.init(S.cfg.googleClientId);
+                await Sync.start();
+            } catch(e) {
+                alert('Login failed: ' + e.message);
+            }
+        }
+
+        async function reconnectGmail() {
+            localStorage.removeItem('aria_gtoken');
+            await loginWithGoogle();
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           DEMO MODE
+        ═══════════════════════════════════════════════════════════════════ */
+        function loadDemoMode() {
+            S.mode = 'demo';
+            const today = new Date().toISOString().slice(0, 10);
+            const lastm = new Date(new Date().getTime() - 30*86400*1000).toISOString().slice(0, 10);
+            const prevm = new Date(new Date().getTime() - 60*86400*1000).toISOString().slice(0, 10);
+            S.data.items = [
+                { actualVendor: 'Netflix', amount: 49.99, currency: 'AED', category: 'streaming', type: 'subscription', isRecurring: true, billingPeriod: 'monthly', dateStr: today, productDescription: 'Netflix Premium', billingPlatform: 'Direct', emailType: 'receipt', isOverdue: false, isUpcoming: false },
+                { actualVendor: 'Spotify', amount: 29.99, currency: 'AED', category: 'streaming', type: 'subscription', isRecurring: true, billingPeriod: 'monthly', dateStr: today, productDescription: 'Spotify Premium', billingPlatform: 'Direct', emailType: 'receipt', isOverdue: false, isUpcoming: false },
+                { actualVendor: 'ChatGPT', amount: 73.50, currency: 'AED', category: 'software_ai', type: 'subscription', isRecurring: true, billingPeriod: 'monthly', dateStr: today, productDescription: 'ChatGPT Plus', billingPlatform: 'Direct', emailType: 'receipt', isOverdue: false, isUpcoming: false },
+                { actualVendor: 'Apple One', amount: 49.95, currency: 'AED', category: 'software_ai', type: 'subscription', isRecurring: true, billingPeriod: 'monthly', dateStr: today, productDescription: 'Apple One Family', billingPlatform: 'Apple', emailType: 'receipt', isOverdue: false, isUpcoming: false },
+                { actualVendor: 'DEWA', amount: 580.00, currency: 'AED', category: 'utilities', type: 'utility_bill', isRecurring: true, billingPeriod: 'monthly', dateStr: today, productDescription: 'DEWA Electricity & Water', billingPlatform: 'Direct', emailType: 'receipt', isOverdue: false, isUpcoming: false },
+                { actualVendor: 'Netflix', amount: 39.99, currency: 'AED', category: 'streaming', type: 'subscription', isRecurring: true, billingPeriod: 'monthly', dateStr: lastm, productDescription: 'Netflix Standard', billingPlatform: 'Direct', emailType: 'receipt', isOverdue: false, isUpcoming: false },
+                { actualVendor: 'Spotify', amount: 29.99, currency: 'AED', category: 'streaming', type: 'subscription', isRecurring: true, billingPeriod: 'monthly', dateStr: lastm, productDescription: 'Spotify Premium', billingPlatform: 'Direct', emailType: 'receipt', isOverdue: false, isUpcoming: false },
+                { actualVendor: 'ChatGPT', amount: 73.50, currency: 'AED', category: 'software_ai', type: 'subscription', isRecurring: true, billingPeriod: 'monthly', dateStr: lastm, productDescription: 'ChatGPT Plus', billingPlatform: 'Direct', emailType: 'receipt', isOverdue: false, isUpcoming: false },
+                { actualVendor: 'Apple One', amount: 49.95, currency: 'AED', category: 'software_ai', type: 'subscription', isRecurring: true, billingPeriod: 'monthly', dateStr: lastm, productDescription: 'Apple One Family', billingPlatform: 'Apple', emailType: 'receipt', isOverdue: false, isUpcoming: false },
+                { actualVendor: 'DEWA', amount: 620.00, currency: 'AED', category: 'utilities', type: 'utility_bill', isRecurring: true, billingPeriod: 'monthly', dateStr: lastm, productDescription: 'DEWA Electricity & Water', billingPlatform: 'Direct', emailType: 'receipt', isOverdue: false, isUpcoming: false }
+            ];
+            S.data.upcomingRaw = [
+                { actualVendor: 'Etisalat', amount: 290.00, currency: 'AED', category: 'telecom', type: 'utility_bill', isRecurring: true, billingPeriod: 'monthly', dateStr: today, productDescription: 'Etisalat Mobile', billingPlatform: 'Direct', emailType: 'upcoming', isOverdue: false, isUpcoming: true, dueDate: '' }
+            ];
+            S.data.overdueAlerts = [
+                { actualVendor: 'Salik', amount: 150.00, currency: 'AED', category: 'transport', type: 'utility_bill', isRecurring: false, billingPeriod: 'one_time', dateStr: prevm, productDescription: 'Salik Road Toll', billingPlatform: 'Direct', emailType: 'overdue_notice', isOverdue: true, subject: 'Overdue: Salik payment required' }
+            ];
+            S.data.emailCount = 42;
+            S.data.lastSync = new Date().toISOString();
+            switchScreen('dashboard');
+            renderFeed();
+            updateSyncBar();
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           UI - RENDERING & NAVIGATION
+         ═══════════════════════════════════════════════════════════════════ */
+        let currentScreen = 'landing';
+        function switchScreen(s) {
+            currentScreen = s;
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(s);
+            if (target) target.classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.screen === s);
+            });
+        }
+
+        function updateSyncBar() {
+            const bar = document.getElementById('syncBar');
+            if (!bar) return;
+            if (S.data.lastSync) {
+                const d = new Date(S.data.lastSync);
+                const minAgo = Math.round((Date.now() - d) / 60000);
+                bar.textContent = `Last updated ${minAgo < 1 ? 'just now' : minAgo + 'm ago'} • ${S.data.emailCount} emails scanned`;
+            }
+        }
+
+        function showSyncOverlay(msg, progress) {
+            let overlay = document.getElementById('syncOverlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'syncOverlay';
+                overlay.className = 'sync-overlay';
+                document.body.appendChild(overlay);
+            }
+            overlay.innerHTML = `
+                <div class="sync-spinner"></div>
+                <div class="sync-msg">${msg}</div>
+                ${progress !== undefined ? `<div class="sync-progress-bar"><div style="width:${progress}%p"></div></div>` : ''}
+            `;
+            overlay.style.display = 'flex';
+        }
+
+        function hideSyncOverlay() {
+            const o = document.getElementById('syncOverlay');
+            if (o) o.style.display = 'none';
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           FEED RENDERER
+        ═══════════════════════════════════════════════════════════════════ */
+        async function renderFeed() {
+            const feed = document.getElementById('feed');
+            if (!feed) return;
+            const cards = await Intelligence.run(S.data.items, S.data.upcomingRaw, S.data.overdueAlerts);
+            if (!cards.length) {
+                feed.innerHTML = `
+                    <div class="feed-title">ARIA's feed</div>
+                    <div class="feed-empty">
+                        <div class="feed-empty-icon">😊</div>
+                        <div class="feed-empty-text">Looks clean! No alerts or insights right now.</div>
+                    </div>`;
+                return;
+            }
+            feed.innerHTML = `<div class="feed-title">ARIA's feed</div>${cards.map(cardHTML).join('')}`;
+        }
+
+        function cardHTML(card) {
+            return `
+                <div class="card ${card.type}" onclick="openDetail(${JSON.stringify(card).replace(/'/g, '\\x'27')})">
+                    <div class="card-icon">${card.icon}</div>
+                    <div class="card-content">
+                        <div class="card-title">${card.title}</div>
+                        <div class="card-body">${card.body}</div>
+                    </div>
+                </div>`;
+        }
+
+        function openDetail(card) {
+            const panel = document.getElementById('detailPanel');
+            if (!panel) return;
+            document.getElementById('detailTitle').textContent = card.title;
+            document.getElementById('detailBody').textContent = card.body;
+            panel.classList.add('open');
+        }
+
+        function closeDetail() {
+            document.getElementById('detailPanel').classList.remove('open');
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           SUBSCRIPTIONS VIEW
+        ═══════════════════════════════════════════════════════════════════ */
+        function renderSubs() {
+            const container = document.getElementById('subsContainer');
+            if (!container) return;
+            const items = S.data.items;
+            if (!items.length) {
+                container.innerHTML = '<p style="text-align:center;color:#64748b;margin-top:40px">No data yet. Connect Gmail to see your subscriptions.</p>';
+                return;
+            }
+            const subscriptions = [...new Map(items.filter(i => i.isRecurring).map(i => [i.actualVendor, i])).values()];
+            const oneTime = items.filter(i => !i.isRecurring);
+            const subTotal = subscriptions.reduce((s, i) => s + i.amount, 0);
+            const otHTML = oneTime.length > 0 ? `
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#44556a;margin-top:24px;margin-bottom:8px">One-time purchases</div>
+                ${oneTime.map(i => `<div class="sub-row"><span class="sub-name">${i.actualVendor}</span><span class="sub-amt">AED ${i.amount.toFixed(2)}</span></div>`).join('')}` : '';
+            container.innerHTML = `
+                <div style="padding:16px;background:var(--surface);border-radius:12px;margin-bottom:16px">
+                    <div style="font-size:13px;color:var(--text-2)">Monthly subscriptions</div>
+                    <div style="font-size:24px;font-weight:700;color:var(--text-1);margin-top:4px">AED ${subTotal.toFixed(2)}</div>
+                </div>
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#44556a;margin-bottom:8px">Subscriptions</div>
+                ${subscriptions.map(i => `<div class="sub-row"><span class="sub-name">${i.actualVendor}</span><span class="sub-amt">AED ${i.amount.toFixed(2)}/mo</span></div>`).join('')}
+                ${otHTML}`;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           CHAT / ARI ASKS
+         ═══════════════════════════════════════════════════════════════════ */
+        function renderChat() {
+            const container = document.getElementById('chatMessages');
+            if (!container) return;
+            container.innerHTML = `<div class="chat-welcome">
+                <div class="chat-welcome-title">Hi Fawaz 🙀</div>
+                <div class="chat-welcome-sub">Aks me anything about your finances, subscriptions, or upcoming bills.</div>
+                <div class="chat-suggestions">
+                    <button onclick="sendSuggestion('How much am I spending on streaming services?')">Streaming costs</button>
+                    <button onclick="sendSuggestion('What subscriptions renew this month?')">Upcoming renewals</button>
+                    <button onclick="sendSuggestion('Which subscriptions can I cancel to save money?')">Saving opportunities</button>
+                </div>
+            </div>`;
+        }
+
+        let chatHistory = [];
+        async function sendChat() {
+            const input = document.getElementById('chatInput');
+            const msg = input?.value.trim();
+            if (!msg) return;
+            input.value = '';
+            appendChat('user', msg);
+            const typing = appendChat('aria', '………', true);
+            chatHistory.push({ role: 'user', content: msg });
+            try {
+                let reply;
+                if (!S.cfg.openaiKey) {
+                    reply = rulRuleBasedChat(msg);
+                } else {
+                    const system = bYou are ARIA, an AI-powered personal finance assistant. The user's financial data: ${JSON.stringify(S.data.items.slice(0, 30))}. Upcoming: ${JSON.stringify(S.data.upcomingRaw.slice(0, 10))}. Overdue: ${JSON.stringify(S.data.overdueAlerts.slice(0, 5))}. Currency is AED (UAE Dirhams). Be concise, helpful, and suggest money-saving tips when relevant.`;
+                    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + S.cfg.openaiKey },
+                        body: JSON.stringify({ model: 'gpt-4o-mini', messages: [{ role: 'system', content: system }, ...chatHistory], max_tokens: 500 })
+                    });
+                    const d = await r.json();
+                    reply = d.choices[0].message.content;
+                }
+                chatHistory.push({ role: 'assistant', content: reply });
+                typing.textContent = reply;
+            } catch (e) {
+                typing.textContent = 'Sorry, I couldn\'t process that. Please check your OpenAI key in Settings.';
+            }
+        }
+
+        function sendSuggestion(msg) {
+            document.getElementById('chatInput').value = msg;
+            sendChat();
+        }
+
+        function appendChat(role, msg, typing = false) {
+            const container = document.getElementById('chatMessages');
+            const d = document.createElement('div');
+            d.className = `chat-msg ${role}`;
+            d.textContent = msg;
+            container.appendChild(d);
+            container.scrollTop = container.scrollHeight;
+            return d;
+        }
+
+        function rulRuleBasedChat(msg) {
+            const l = msg.toLowerCase();
+            const items = S.data.items;
+            if (l.includes('streaming')) {
+                const total = items.filter(i => i.category === 'streaming').reduce((s, i) => s + i.amount, 0);
+                return `You're spending AED ${total.toFixed(2)}/month on streaming.`;
+            }
+            if (l.includes('renew') || l.includes('upcoming')) {
+                if (!S.data.upcomingRaw.length) return 'No upcoming renewals found.';
+                return 'Upcoming renewals: ' + S.data.upcomingRaw.map(u => `${u.actualVendor} (AED ${u.amount.toFixed(2)})`).join(', ');
+            }
+            if (l.includes('save') || l.includes('cancel')) {
+                const recurring = items.filter(i => i.isRecurring);
+                const total = recurring.reduce((s, i) => s + i.amount, 0);
+                return `You have ${recurring.length} subscriptions totaling AED ${total.toFixed(2)}/month. Review your Subscriptions tab to identify ones you don't use.`;
+            }
+            if (l.includes('spend') || l.includes('total') || l.includes('how much')) {
+                const today = new Date();
+                const thisMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+                const total = items.filter(i => (i.dateStr || '').startsWith(thisMonth)).reduce((s, i) => s + i.amount, 0);
+                return `You've spent AED ${total.toFixed(2)} this month.`;
+            }
+            return 'Connect your OpenAI key in Settings for smarter answers. Currently using rule-based responses.';
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           SETTINGS VIEW
+         ═══════════════════════════════════════════════════════════════════ */
+        function renderSettings() {
+            document.getElementById('googleClientIdInput').value = S.cfg.googleClientId || '';
+            document.getElementById('openaiKeyInput').value = S.cfg.openaiKey || '';
+        }
+
+        function saveSettings() {
+            S.cfg.googleClientId = document.getElementById('googleClientIdInput').value.trim();
+            S.cfg.openaiKey = document.getElementById('openaiKeyInput').value.trim();
+            saveConfig();
+            const btn = document.querySelector('.settings-save');
+            if (btn) { btn.textContent = 'Saved!'; setTimeout(() => btn.textContent = 'Save', 2000); }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           INIT
+         ═══════════════════════════════════════════════════════════════════ */
+        function init() {
+            loadConfig();
+            loadData();
+            if (S.data.items.length > 0 || S.mode === 'demo') {
+                switchScreen('dashboard');
+                renderFeed();
+                updateSyncBar();
+            } else {
+                switchScreen('landing');
+            }
+            if (S.cfg.googleClientId) GAuth.init(S.cfg.googleClientId);
+        }
+        init();
+    </script>
+</body>
+</html>                  if (meRes.status === 401) {
                         console.log('[Spotify] Token expired on load — refreshing...');
                         await SpotifyAuth.refreshToken();
                     } else {
@@ -2390,7 +2213,7 @@ ${block}`;
                 if (!query) return;
                 const results = await this.searchPodcasts(query);
                 if (!results.length) { alert('No results found. Try a different search term.'); return; }
-                const list = results.map((s, i) => `${i+1}. ${s.name} —  ${s.publisher}`).join('\n');
+                const list = results.map((s, i) => `${i+1}. ${s.name} — ${s.publisher}`).join('\n');
                 const choice = prompt(`Results:\n\n${list}\n\nEnter number to add, or Cancel:`);
                 if (!choice) return;
                 const idx = parseInt(choice) - 1;
@@ -2494,134 +2317,146 @@ ${block}`;
                                 const banner = document.createElement('div');
                                 banner.id = 'tokenRefreshBanner';
                                 banner.style.cssText = 'background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between';
-                                banner.innerHTML = `<span style="font-size:13px;color:#ef4444">⚠️ Gmail token expired — agent paused</span><button onclick="reconnectGmail()" style="padding:6px 12px;background:#ef4444;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">Reconnect</button>`;
+                                banner.innerHTML = `<span style="font-size:13px;color:#ef4444">⚠️ Gmail token expired — agent paused</span><button onclick="reconnectGmail()" style="padding:6px 12px;background:#ef4444;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:600;cursor:pointer">Reconnect</button>`;
                                 feed.prepend(banner);
                             }
                         }
                     }
-                } catch(e) { /* backend offline, ignore */ }
-            },
-
-            _handleAlert(alert) {
-                // Tier 1 & 2 get OS notifications immediately
-                if ((alert.tier || 4) <= 2) this._notify(alert);
-                // Merge into S.data.detected (feed will pick these up)
-                if (!S.data.detected) S.data.detected = [];
-                if (!S.data.detected.some(d => d.id === alert.id)) {
-                    S.data.detected.push(alert);
-                    saveData();
                 }
             },
 
-            _notify(alert) {
-                if (!('Notification' in window) || Notification.permission !== 'granted') return;
-                try {
-                    new Notification('ARIA', {
-                        body: (alert.title || '') + '\n' + (alert.body || ''),
-                        tag: alert.id || String(Date.now())
-                    });
-                } catch (e) {}
+            _startPolling() {
+                if (this.pollingInterval) return;
+                this.pollingInterval = setInterval(() => {
+                    this.pollAlerts();
+                    this.checkAndRefreshToken();
+                }, 150 * 1000); // poll every 2.5 mins
             },
 
-            startPolling() {
-                if (this.pollingInterval) clearInterval(this.pollingInterval);
-                // Poll for new alerts every 30s
-                this.pollingInterval = setInterval(() => this.pollAlerts(), 30000);
-                // Check token health every 10 minutes
-                setInterval(() => this.checkAndRefreshToken(), 10 * 60 * 1000);
-                // Kick off immediately
-                this.register().then(() => {
-                    if (this.connected) this.pollAlerts();
-                });
+            _handleAlert(alert) {
+                const existing = S.data.items.find(i => i.id === alert.id);
+                if (!existing) {
+                    S.data.items.unshift(alert);
+                    saveData();
+                    updateSyncBar();
+                }
             },
 
-            async checkStatus() {
-                try {
-                    const res = await fetch(`${this.url}/api/status`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        this.connected = true;
-                        const lastSync = data.lastSync ? new Date(data.lastSync).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : 'never';
-                        this.updateStatusUI(true, `Active · last scan ${lastSync} · ${data.itemCount||0} items tracked`);
-                        return data;
-                    }
-                } catch (e) {}
-                this.connected = false;
-                this.updateStatusUI(false, 'Not running — auto-starts on login, or double-click START-ARIA-AGENT.command');
-                return null;
-            },
-
-            updateStatusUI(online, message) {
-                const el = document.getElementById('backendStatus');
-                if (!el) return;
-                const dot = `<span style="width:8px;height:8px;border-radius:50%;background:${online?'#22c55e':'#ef4444'};display:inline-block;margin-right:6px;flex-shrink:0"></span>`;
-                el.innerHTML = dot + message;
-                el.style.color = online ? '#22c55e' : '#ef4444';
-                // Show help box only when offline
-                const help = document.getElementById('agentHelpBox');
-                if (help) help.style.display = online ? 'none' : 'block';
+            updateStatusUI(connected, msg) {
+                const dot = document.querySelector('.agent-dot');
+                const label = document.querySelector('.agent-label');
+                if (dot) { dot.classList.toggle('connected', connected); dot.classList.toggle('offline', !connected); }
+                if (label) label.textContent = msg;
             }
         };
 
         /* ═══════════════════════════════════════════════════════════════════
-           DEMO MODE
-        ═══════════════════════════════════════════════════════════════════ */
-        function loadDemoMode() {
-            S.mode = 'demo';
-            // Use rolling dates relative to today so intelligence agents fire correctly
-            const now = new Date();
-            const fmt = d => d.toISOString().slice(0,10);
-            const daysAgo = n => fmt(new Date(now - n*86400000));
-            const daysAhead = n => fmt(new Date(now.getTime() + n*86400000));
-            const thisMonth = now.toISOString().slice(0,7);
-            const lastMonth = new Date(now.getFullYear(), now.getMonth()-1, 1).toISOString().slice(0,7);
+           SPOTIFY AUTH
+         ═══════════════════════════════════════════════════════════════════ */
+        const SpotifyAuth = {
+            token: null,
+            refresh: null,
+            previewPause: null,
 
-            S.data.items = [
-                // Current month — DEWA spike (this month 847 vs last month 592)
-                { actualVendor: 'DEWA', amount: 847.00, dateStr: daysAgo(8), isRecurring: true, category: 'utilities', type: 'utility_bill', emailType: 'receipt', currency:'AED' },
-                // Previous month DEWA (lower, triggers spike alert)
-                { actualVendor: 'DEWA', amount: 592.00, dateStr: daysAgo(38), isRecurring: true, category: 'utilities', type: 'utility_bill', emailType: 'receipt', currency:'AED' },
-                // Spotify charged TWICE this month (duplicate alert)
-                { actualVendor: 'Spotify', amount: 23.99, dateStr: daysAgo(5), isRecurring: true, category: 'streaming', type: 'subscription', emailType: 'receipt', currency:'AED' },
-                { actualVendor: 'Spotify', amount: 23.99, dateStr: daysAgo(3), isRecurring: true, category: 'streaming', type: 'subscription', emailType: 'receipt', currency:'AED' },
-                // Netflix — active this month
-                { actualVendor: 'Netflix', amount: 57.99, dateStr: daysAgo(12), isRecurring: true, category: 'streaming', type: 'subscription', emailType: 'receipt', currency:'AED' },
-                // ChatGPT + Claude overlap (AI duplicate insight)
-                { actualVendor: 'ChatGPT Plus', amount: 73.50, dateStr: daysAgo(10), isRecurring: true, category: 'software_ai', type: 'subscription', emailType: 'receipt', currency:'AED' },
-                { actualVendor: 'Claude Pro', amount: 73.50, dateStr: daysAgo(9), isRecurring: true, category: 'software_ai', type: 'subscription', emailType: 'receipt', currency:'AED' },
-                // Adobe last month (triggers unused detector — 35+ days ago)
-                { actualVendor: 'Adobe Creative Cloud', amount: 201.85, dateStr: daysAgo(34), isRecurring: true, category: 'software_ai', type: 'subscription', emailType: 'receipt', currency:'AED' },
-                // Etisalat current month
-                { actualVendor: 'Etisalat', amount: 249.00, dateStr: daysAgo(6), isRecurring: true, category: 'telecom', type: 'utility_bill', emailType: 'receipt', currency:'AED' },
-                // Food delivery this month — big spend (triggers insight)
-                { actualVendor: 'Talabat', amount: 780.00, dateStr: daysAgo(7), isRecurring: false, category: 'food', type: 'one_time', emailType: 'receipt', currency:'AED' },
-                { actualVendor: 'Deliveroo', amount: 514.00, dateStr: daysAgo(14), isRecurring: false, category: 'food', type: 'one_time', emailType: 'receipt', currency:'AED' },
-                // Food last month — lower (spike comparison)
-                { actualVendor: 'Talabat', amount: 320.00, dateStr: daysAgo(38), isRecurring: false, category: 'food', type: 'one_time', emailType: 'receipt', currency:'AED' },
-                // Amazon, Noon
-                { actualVendor: 'Amazon Prime', amount: 55.00, dateStr: daysAgo(15), isRecurring: true, category: 'shopping', type: 'subscription', emailType: 'receipt', currency:'AED' },
-                { actualVendor: 'Noon', amount: 156.75, dateStr: daysAgo(19), isRecurring: false, category: 'shopping', type: 'one_time', emailType: 'receipt', currency:'AED' },
-                // Travel
-                { actualVendor: 'Emirates', amount: 2650.00, dateStr: daysAgo(20), isRecurring: false, category: 'hotels_travel', type: 'flight', emailType: 'receipt', currency:'AED' },
-                { actualVendor: 'Booking.com', amount: 1840.00, dateStr: daysAgo(21), isRecurring: false, category: 'hotels_travel', type: 'hotel', emailType: 'receipt', currency:'AED' },
-                // Apple
-                { actualVendor: 'Apple iCloud+', amount: 4.03, dateStr: daysAgo(11), isRecurring: true, category: 'software_ai', type: 'subscription', emailType: 'receipt', currency:'AED' }
-            ];
-            S.data.upcomingRaw = [
-                { actualVendor: 'Netflix', amount: 57.99, dateStr: daysAhead(3), dueDate: daysAhead(3), isRecurring: true, emailType: 'upcoming', currency:'AED' },
-                { actualVendor: 'DEWA', amount: 847.00, dateStr: daysAhead(5), dueDate: daysAhead(5), isRecurring: true, emailType: 'invoice', currency:'AED' },
-                { actualVendor: 'Etisalat', amount: 249.00, dateStr: daysAhead(6), dueDate: daysAhead(6), isRecurring: true, emailType: 'upcoming', currency:'AED' }
-            ];
-            S.data.overdueAlerts = [];
-            S.data.emailCount = 143;
-            S.data.lastSync = new Date().toISOString();
-            S.auth.user = 'Fawaz';
-            S.auth.email = 'fhalazon@gmail.com';
-            S.auth.connected = { gmail: true, spotify: false };
-            localStorage.setItem('aria_data', JSON.stringify(S.data));
-            localStorage.setItem('ariaOnboardingDone', 'true');
-            document.getElementById('demoBanner').style.display = 'block';
-            switchScreen('dashboard');
+            load() {
+                const st = JSON.parse(localStorage.getItem('aria_stoken') || 'null');
+                if (st) { this.token = st.token; this.refresh = st.refresh; }
+            },
+
+            save() {
+                localStorage.setItem('aria_stoken', JSON.stringify({ token: this.token, refresh: this.refresh }));
+            },
+
+            async refreshToken() {
+                if (!this.refresh) return false;
+                try {
+                    const res = await fetch(API + '/api/spotify/refresh', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ refreshToken: this.refresh, userId: 'default' })
+                    });
+                    if (!res.ok) return false;
+                    const data = await res.json();
+                    if (data.access_token) {
+                        this.token = data.access_token;
+                        if (data.refresh_token) this.refresh = data.refresh_token;
+                        this.save();
+                        return true;
+                    }
+                } catch (e) { }
+                return false;
+            },
+
+            async call(endpoint, method = 'GET', body = null) {
+                const headers = { 'Authorization': 'Bearer ' + this.token };
+                if (body) headers['Content-Type'] = 'application/json';
+                const opts = { method, headers };
+                if (body) opts.body = JSON.stringify(body);
+                const res = await fetch('https://api.spotify.com/v1' + endpoint, opts);
+                if (res.status === 401) {
+                    const refreshed = await this.refreshToken();
+                    if (refreshed) {
+                        headers['Authorization'] = 'Bearer ' + this.token;
+                        return fetch('https://api.spotify.com/v1' + endpoint, opts);
+                    }
+                }
+                return res;
+            }
+        };
+
+        /* ═══════════════════════════════════════════════════════════════════
+           SPOTIFY PLAYER & PODCAST MANAGER
+         ═══════════════════════════════════════════════════════════════════ */
+        const SpotifyPlayer = {
+            currentTrack: null,
+            isPlaying: false,
+            previewAudio: null,
+            async nowPlaying() {
+                if (!SpotifyAuth.token) return null;
+                try {
+                    const res = await SpotifyAuth.call('/me/player/currently-playing');
+                    if (!res || res.status === 204) return null;
+                    const data = await res.json();
+                    this.currentTrack = data.item;
+                    this.isPlaying = data.is_playing;
+                    return data;
+                } catch(e) { return null; }
+            },
+            async pause() { await SpotifyAuth.call('/me/player/pause', 'PUT'); this.isPlaying = false; },
+            async resume() { await SpotifyAuth.call('/me/player/play', 'PUT'); this.isPlaying = true; },
+            async skip() { await SpotifyAuth.call('/me/player/next', 'POST'); },
+            async playShow(showUri) {
+                const epsRes = await SpotifyAuth.call(`/shows/${showUri.split(':').pop()}/episodes?limit=1`);
+                const data = await epsRes.json();
+                if (data.items && data.items.length) {
+                    await SpotifyAuth.call('/me/player/play', 'PUT', { uris: [data.items[0].uri] });
+                    this.isPlaying = true;
+                }
+            }
+        };
+
+        const PodcastManager = {
+            get() { return JSON.parse(localStorage.getItem('aria_watchlist') || '{"podcasts":[]}'); },
+            save(wl) { localStorage.setItem('aria_watchlist', JSON.stringify(wl)); },
+            add(name) { const wl = this.get(); if (!wl.podcasts.includes(name)) { wl.podcasts.push(name); this.save(wl); } },
+            remove(name) { const wl = this.get(); wl.podcasts = wl.podcasts.filter(p => p !== name); this.save(wl); },
+            list() { return this.get().podcasts; },
+
+            async loadSpotifyOnStart() {
+                SpotifyAuth.load();
+                if (!SpotifyAuth.token) return;
+                // Validate existing token
+                const meRes = await SpotifyAuth.call('/me');
+                if (meRes && meRes.ok) {
+                    console.log('[Spotify] Token valid — Spotify ready');
+                } else if (meRes && meRes.status === 401) {
+                    console.log('[Spotify] Token expired on load — refreshing...');
+                    await SpotifyAuth.refreshToken();
+}
+            },
+            async searchPodcasts(query) {
+                try {
+                    const res = await fetch(`${API?����7�F�g��6V&6���G�V�6�FUU$�6����V�B�VW'�������b�&W2����&WGW&��Ӱ�6��7BFF�v�B&W2�6�ₓ��&WGW&�FF�6��w2���Ӱ��6F6��R��&WGW&��ӲТ���7��2'&�w6Tf����vVB����G'���6��7B&W2�v�BfWF6����r���7�F�g��ג�6��w2r����b�&W2����&WGW&��Ӱ�6��7BFF�v�B&W2�6�ₓ��&WGW&�FF�6��w2���Ӱ��6F6��R��&WGW&��ӲТТӰ���)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y �245$TT�)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y)Y��gV�7F���&V�FW$2����6��7B6��F��W"�F�7V�V�B�vWDV�V�V�D'��B�v46��F��W"r����b�6��F��W"�&WGW&㰢6��7B�4v����tWF��F��V㰢6��7B�57�F�g��7�F�g�WF��F��V㰢6��F��W"���W$�D��� ��F�b6�73�&֗FV�#��F�b6�73�&֖6��v���#��7frf�Wt&���##B#B"v�GF��##B"�V�v�C�##B"f����&���R"7G&��S�&7W'&V�D6���""7G&��R�v�GF��#"#��F�C�$�Bf""�"�%cf"""�&�f"""'c�""�"$�G�"����ǖƖ�R���G3�##"�b"�2"�b"����7fs���F�c��F�b6�73�&֖�f�#��F�b6�73�&���R#�v�����F�c��F�b6�73�&�7FGW2#�G��4v����t6���V7FVBr�t��B6���V7FVBw���F�c���F�c��'WGF��6�73�&�'F�G��4v����v6���V7FVBr�rw�"��6Ɩ6��"G��4v����w&V6���V7Dv���r�v��v��v�F�v��v�R��w�#�G��4v����u&V6���V7Br�t6���V7Bw���'WGF�����F�c��F�b6�73�&֗FV�#��F�b6�73�&֖6��7�F�g�#��7frf�Wt&���##B#B"v�GF��##B"�V�v�C�##B"f����&���R"7G&��S�&7W'&V�D6���""7G&��R�v�GF��#"#��6�&6�R7��#""7��#""#�#"���F�C�$ӂB�W3�R�B�BB"���F�C�$�b�R3"�R��RR�R��RR�R�RR�R�R"���F�C�$�Rr�W32�R�"r�"r"r""����7fs���F�c��F�b6�73�&֖�f�#��F�b6�73�&���R#�7�F�g���F�c��F�b6�73�&�7FGW2#�G��57�F�g��t6���V7FVBr�t��B6���V7FVBw���F�c���F�c��'WGF��6�73�&�'F�G��57�F�g��v6���V7FVBr�rw�"��6Ɩ6��"G��57�F�g��u7�F�g�WF��F��V���V�õ7�F�g�WF��6fR���&V�FW$2��r�v��F�r���6F����&Vc�rG������7�F�g����v��v�#�G��57�F�g��tF�66���V7Br�t6���V7Bw���'WGF�����F�c��F�b6�73�&vV�B�7FGW2�&��6�#��F�b6�73�&vV�B�F�B#���F�c��F�b6�73�&vV�B��&V�#�6�V6���rvV�B7FGW2�����F�c���F�c���&6�V�DvV�B�&Vv�7FW"����&6�V�DvV�B��7F'E��Ɩ�r����tchScreen('dashboard');
             renderFeed();
         }
 
@@ -2778,7 +2613,7 @@ ${block}`;
                     });
                     cards.sort((a,b) => (b.priority||50) - (a.priority||50));
                 }
-            } catch(e) {}
+            } catch (e) {}
 
             // Merge in agent-generated trip accommodation cards
             try {
@@ -2799,7 +2634,7 @@ ${block}`;
             } catch(e) {}
 
             // Merge in news cards from backend NewsAgent
-            try {
+             try {
                 const newsRes = await fetch(API + '/api/news?userId=default');
                 if (newsRes.ok) {
                     const news = await newsRes.json();
@@ -2854,7 +2689,7 @@ ${block}`;
             if (psc) psc.textContent = uniqueSubs.length || '—';
             if (psav) psav.textContent = potentialSavings > 0 ? 'AED ' + potentialSavings.toFixed(0) : '—';
 
-            let html = `<div class="feed-title">What ARIA found</div>`;
+            let html = `<div class="feed-title">ARIA's feed</div>`;
             if(totalMo > 0){
                 html += `<div class="feed-summary">
                     <div class="feed-sum-item"><span class="feed-sum-val">AED ${totalMo.toFixed(0)}</span><span class="feed-sum-label">monthly spend</span></div>
@@ -2989,7 +2824,7 @@ ${block}`;
                             </div>`;
                         };
 
-                        const picksHtml = allPicks.map((p, pi) => renderPich(p, pi, pi >= PICKS_VISIBLE)).join('');
+                        const picksHtml = allPicks.map((p, pi) => renderPick(p, pi, pi >= PICKS_VISIBLE)).join('');
                         const remainingCount = allPicks.length - PICKS_VISIBLE;
                         const seeAllBtn = remainingCount > 0
                             ? `<button onclick="(function(btn){
@@ -2998,7 +2833,7 @@ ${block}`;
                                     hidden.forEach(el=>el.style.display=expanded?'none':'block');
                                     btn.dataset.expanded=expanded?'':'1';
                                     btn.textContent=expanded?'See all ${allPicks.length} options ↓':'Show fewer ↑';
-                               })(this)" data-expanded="" style="width:100%;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:9px;padding:10px;color:#818cf8;font-size:12px;font-weight:600;cursor:pointer;margin-top:10px;font-family:inherit">
+                              })(this)" data-expanded="" style="width:100%;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:9px;padding:10px;color:#818cf8;font-size:12px;font-weight:600;cursor:pointer;margin-top:10px;font-family:inherit">
                                 See all ${allPicks.length} options ↓
                                </button>`
                             : '';
@@ -3006,14 +2841,14 @@ ${block}`;
                         html += `<div class="card accommodation" style="border-color:rgba(99,102,241,0.25);background:rgba(99,102,241,0.03)">
                             <div class="card-timestamp">${timeStr}</div>
                             <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
-                                <span style="font-size:18px">🧳</span>
+                                <span style="font-size:18px">🧳C/span>
                                 <div style="flex:1">
                                     <div style="font-size:15px;font-weight:700;color:#f1f5f9">${card.destination}</div>
                                     ${dateRange ? `<div style="font-size:11px;color:#475569">🗓 ${dateRange} · ${card.guests||2} guests</div>` : '<div style="font-size:11px;color:#475569">Open research · updates every hour</div>'}
                                 </div>
                                 <span style="font-size:10px;color:#6366f1;font-weight:700;background:rgba(99,102,241,0.12);padding:3px 8px;border-radius:20px;border:1px solid rgba(99,102,241,0.3);white-space:nowrap">${allPicks.length} options</span>
                             </div>
-                            ${overviewHtml}
+                             ${overviewHtml}
                             ${picksHtml}
                             ${seeAllBtn}
                             ${tipHtml}
@@ -3172,7 +3007,7 @@ ${block}`;
                 charges.forEach(i => { const m = (i.dateStr||'').slice(0,7); if(!byMonth[m]) byMonth[m]=0; byMonth[m]+=i.amount; });
                 const months = Object.keys(byMonth).sort().reverse().slice(0,6);
                 body = `<div style="margin-bottom:16px;font-size:14px;color:#94a3b8">${card.body}</div>
-                    <div style="font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Month by month</div>`;
+                    <div style="font-size:12px;color:#64748J;text-transform:uppercase;letter-spacing:.5pz;margin-bottom:8px">Month by month</div>`;
                 months.forEach((m,i) => {
                     const pct = i===0 && months[1] ? Math.round((byMonth[m]-byMonth[months[1]])/byMonth[months[1]]*100) : 0;
                     const badge = i===0 && pct>0 ? `<span style="background:rgba(239,68,68,.15);color:#ef4444;border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700">+${pct}%</span>` : '';
@@ -3720,7 +3555,7 @@ RULES:
             }
         };
 
-        /* ═══════════════════════════════════════════════════════════════════
+        /* ════════���══════════════════════════════════════════════════════════
            TRIP WATCHLIST — agent-first, conversational destination input
         ═══════════════════════════════════════════════════════════════════ */
         const TripWatchlist = {
